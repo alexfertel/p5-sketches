@@ -1,4 +1,4 @@
-///<reference path="../p5.global-mode.d.ts" />
+///<reference path="../../p5.global-mode.d.ts" />
 
 const Y_AXIS = 1;
 const X_AXIS = 2;

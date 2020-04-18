@@ -1,4 +1,4 @@
-///<reference path="../p5.global-mode.d.ts" />
+///<reference path="../../p5.global-mode.d.ts" />
 /**
  * This example can be found in the Processing examples package
  * that comes with the Processing PDE.

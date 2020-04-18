@@ -1,7 +1,9 @@
 #!/bin/bash
 mkdir $1
+mkdir $1/showcase
 touch $1/index.html
 touch $1/sketch.js
+
 
 HTML=$'<!DOCTYPE html>
 <html lang="">
@@ -16,7 +18,7 @@ HTML=$'<!DOCTYPE html>
       margin: 0;
     }
   </style>
-  <script src="../p5.js"></script>
+  <script src="../../p5.js"></script>
   <script src="sketch.js"></script>
 </head>
 
@@ -25,9 +27,16 @@ HTML=$'<!DOCTYPE html>
 
 </html>'
 
-JS=$'///<reference path="../p5.global-mode.d.ts" />
+JS=$'///<reference path="../../p5.global-mode.d.ts" />
+
+let width, height;
+
 function setup() {
-  createCanvas(windowWidth, windowHeight);
+  width = windowWidth;
+  height = windowHeight;
+  createCanvas(width, height);
+  background(1);
+  colorMode(HSB, 255);
 
 }
 

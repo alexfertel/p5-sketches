@@ -1,4 +1,4 @@
-///<reference path="../p5.global-mode.d.ts" />
+///<reference path="../../p5.global-mode.d.ts" />
 
 let w = 1;
 // An array of 0s and 1s
