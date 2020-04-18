@@ -1,8 +1,11 @@
 #!/bin/bash
-mkdir $1
-mkdir $1/showcase
-touch $1/index.html
-touch $1/sketch.js
+
+SKETCH_DIR=sketches/$1
+
+mkdir $SKETCH_DIR
+# mkdir $SKETCH_DIR/showcase
+touch $SKETCH_DIR/index.html
+touch $SKETCH_DIR/sketch.js
 
 
 HTML=$'<!DOCTYPE html>
@@ -35,7 +38,7 @@ function setup() {
   width = windowWidth;
   height = windowHeight;
   createCanvas(width, height);
-  background(1);
+  background(255);
   colorMode(HSB, 255);
 
 }
@@ -44,5 +47,5 @@ function draw() {
 
 }'
 
-echo "$HTML" > $1/index.html
-echo "$JS" > $1/sketch.js
+echo "$HTML" > $SKETCH_DIR/index.html
+echo "$JS" > $SKETCH_DIR/sketch.js
