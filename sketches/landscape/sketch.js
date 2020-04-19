@@ -49,7 +49,7 @@ function setup() {
   // black_orange = color(map(20, 0, 360, 0, 255), 255, 0);
   redish = color(0, 255, map(53, 0, 100, 0, 255));
 
-  c1 = color(map(random(255), 0, 360, 0, 255), 150, random(150,200));
+  c1 = color(map(random(255), 0, 360, 0, 255), 150, random(150, 200));
   c2 = color(map(random(255), 0, 360, 0, 255), 150, random(200, 255));
 
   colorMode(RGB, 255);
@@ -83,7 +83,7 @@ function setup() {
   let lineCount = 4;
   let pointCount = 150;
   colorMode(HSB, 255);
-  let hue = random(100,255);
+  let hue = random(100, 255);
   for (let i = 0; i < lineCount; i++) {
     let line = new Array(pointCount);
     for (let j = 0; j < pointCount; j++)
@@ -93,7 +93,9 @@ function setup() {
       };
 
     noStroke();
-    fill(color(hue, random(100, 255), map(80 - i * 7, 0, 100, 0, 255), 255 - i * 5));
+    fill(
+      color(hue, random(100, 255), map(80 - i * 7, 0, 100, 0, 255), 255 - i * 5)
+    );
     drawGround(line);
   }
 
