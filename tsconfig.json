@@ -1,13 +1,13 @@
 {
-    "compilerOptions": {
-        "target": "es5",
-        "removeComments": true,
-        "preserveConstEnums": true,
-        "outDir": "./build/",
-        "sourceMap": true,
-        "noImplicitAny": true,
-        "module": "es6",
-        "allowJs": true,
-        "allowSyntheticDefaultImports": true
-    }
+  "compilerOptions": {
+    "target": "es5",
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "outFile": "./build/build.js",
+    "sourceRoot": "./src/",
+    "rootDir": "./src/",
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "module": "none"
+  }
 }

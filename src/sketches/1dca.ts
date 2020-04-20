@@ -32,31 +32,31 @@ function generate() : void{
 
 
 
-export function setup() : void {
-  createCanvas(windowWidth, windowHeight);
+// function setup() : void {
+//   createCanvas(windowWidth, windowHeight);
 
-  cells = Array(floor(width / w));
-  for (let i = 0; i < cells.length; i++) {
-    cells[i] = random([0, 1]);
-  }
-}
+//   cells = Array(floor(width / w));
+//   for (let i = 0; i < cells.length; i++) {
+//     cells[i] = random([0, 1]);
+//   }
+// }
 
-export function draw() : void {
-  for (let i = 0; i < cells.length; i++) {
-    if (cells[i] === 1) {
-      fill(1);
-    } else {
-      fill(0);
-      noStroke();
-      rect(i * w, generation * w, w, w);
-    }
-  }
-  if (generation < height/w) {
-    generate();
-  }
-  else {
-    generation = 0;
-  }
-}
+// function draw() : void {
+//   for (let i = 0; i < cells.length; i++) {
+//     if (cells[i] === 1) {
+//       fill(1);
+//     } else {
+//       fill(0);
+//       noStroke();
+//       rect(i * w, generation * w, w, w);
+//     }
+//   }
+//   if (generation < height/w) {
+//     generate();
+//   }
+//   else {
+//     generation = 0;
+//   }
+// }
 
 

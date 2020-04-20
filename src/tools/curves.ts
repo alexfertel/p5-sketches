@@ -1,7 +1,4 @@
-import { polarToCartesian } from "./conversions";
-import { CartesianPoint } from "../interfaces/points";
-
-export const drawSpiral = (
+const drawSpiral = (
   x: number,
   y: number,
   radius: number,
@@ -21,7 +18,7 @@ export const drawSpiral = (
   endShape();
 };
 
-export const drawArc = (
+const drawArc = (
   x: number,
   y: number,
   r: number,
@@ -39,7 +36,7 @@ export const drawArc = (
   endShape();
 };
 
-export const drawDisc = (center: CartesianPoint, lineCount: number): void => {
+const drawDisc = (center: Vector2D, lineCount: number): void => {
   for (let i = 0; i < lineCount; i++) {
     const theta = random(PI * 2);
     const alpha = 0.01;
