@@ -1,3 +1,13 @@
+const insideCircleBounds = (
+  x: number,
+  y: number,
+  cx: number,
+  cy: number,
+  r: number
+): boolean => {
+  return dist(x, y, cx, cy) < r;
+};
+
 const drawSpiral = (
   x: number,
   y: number,
@@ -10,7 +20,7 @@ const drawSpiral = (
   const av = map(angularVelocity, 0, 1, 0, PI * 2);
   beginShape();
   while (r < radius) {
-    const point = polarToCartesian(r, angle);
+    const point = polarToCartesian(new PolarPoint(r, angle));
     curveVertex(x + point.x, y + point.y);
     angle += av;
     r += velocity;
@@ -28,7 +38,7 @@ const drawArc = (
 ): void => {
   beginShape();
   while (length > 0) {
-    const point = polarToCartesian(r, theta);
+    const point = polarToCartesian(new PolarPoint(r, theta));
     curveVertex(x + point.x, y + point.y);
     theta += alpha;
     length--;

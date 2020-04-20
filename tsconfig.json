@@ -4,10 +4,18 @@
     "removeComments": true,
     "preserveConstEnums": true,
     "outFile": "./build/build.js",
-    "sourceRoot": "./src/",
-    "rootDir": "./src/",
+    // "sourceRoot": "./src/",
+    // "rootDir": "./src/",
     "sourceMap": true,
     "noImplicitAny": true,
-    "module": "none"
-  }
+    "module": "none",
+    "allowJs": true
+  },
+  "include": [
+    "src/global.d.ts",
+    "src/tools/**/*",
+    "src/interfaces/**/*",
+    "src/sketches/**/*",
+    "src/index.ts"
+  ]
 }
