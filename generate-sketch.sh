@@ -30,11 +30,10 @@ HTML=$'<!DOCTYPE html>
 
 </html>'
 
-JS=$'///<reference path="../../p5.global-mode.d.ts" />
-
+JS=$'
 let width, height;
 
-function setup() {
+export function setup() : void {
   width = windowWidth;
   height = windowHeight;
   createCanvas(width, height);
@@ -43,7 +42,7 @@ function setup() {
 
 }
 
-function draw() {
+export function draw() : void {
 
 }'
 

@@ -10,7 +10,9 @@
 
 # End of https://www.gitignore.io/api/code
 
-sketches/**/results/*
+build/*.js
+build/*.js.map
+!build/build.js
 
 
-
+node_modules
