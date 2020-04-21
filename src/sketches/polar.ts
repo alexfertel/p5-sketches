@@ -1,4 +1,3 @@
-
 // function makeSink(xCenter, yCenter, r, grid) {
 //   push();
 //   for (let j = floor(yCenter - r); j < yCenter + r; j++) {
@@ -24,24 +23,22 @@
 //   pop();
 // }
 
-class DiscSketch implements Sketch{
+class DiscSketch implements ISketch {
+  setup(): void {
+    createCanvas(windowWidth, windowHeight);
+    colorMode(HSL, 255);
 
-    setup(): void {
-      createCanvas(windowWidth, windowHeight);
-      colorMode(HSL, 255);
-    
-      const c = color(map(214, 0, 360, 0, 255), 255, map(30, 0, 100, 0, 255));
-      background(c);
-    
-      noFill();
-        
-      stroke(255);
-      const center = { x: width / 2, y: height / 2 };
-      drawDisc(center as Vector2D, random(50, 200));
-    
-      frame(750);
-    }
-    
-    draw(): void {}
+    const c = color(map(214, 0, 360, 0, 255), 255, map(30, 0, 100, 0, 255));
+    background(c);
+
+    noFill();
+
+    stroke(255);
+    const center = { x: width / 2, y: height / 2 };
+    drawDisc(center as Vector2D, random(50, 200));
+
+    frame(750);
+  }
+
+  draw(): void {}
 }
-

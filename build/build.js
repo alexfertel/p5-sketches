@@ -4,8 +4,8 @@ var polarToCartesian = function (polarPoint) {
 var cartesianToPolar = function (vector) {
     return new PolarPoint(sqrt(vector.x * vector.x + vector.y * vector.y), atan2(vector.y, vector.x));
 };
-var insideCircleBounds = function (x, y, cx, cy, r) {
-    return dist(x, y, cx, cy) < r;
+var insideCircleBounds = function (point, circle) {
+    return dist(point.x, point.y, circle.center.x, circle.center.y) < circle.radius;
 };
 var drawSpiral = function (x, y, radius, velocity, angularVelocity, r, angle) {
     if (r === void 0) { r = 0; }
@@ -97,6 +97,9 @@ var Vector2D = (function () {
     Vector2D.prototype.add = function (another) {
         return new Vector2D(this.x + another.x, this.y + another.y);
     };
+    Vector2D.prototype.sub = function (another) {
+        return new Vector2D(this.x - another.x, this.y - another.y);
+    };
     Vector2D.prototype.scale = function (factor) {
         return new Vector2D(this.x * factor, this.y * factor);
     };
@@ -143,6 +146,59 @@ function generate() {
     cells = nextgen;
     generation++;
 }
+var CliffordAttractorSketch = (function () {
+    function CliffordAttractorSketch() {
+    }
+    CliffordAttractorSketch.prototype.setup = function () {
+        createCanvas(windowWidth, windowHeight);
+        this.points = [];
+        for (var y = 0; y < height; y += 5) {
+            this.points.push({
+                x: 0,
+                y: y,
+                vx: 0,
+                vy: 0
+            });
+        }
+        this._a = random() * 4 - 2;
+        this._b = random() * 4 - 2;
+        this._c = random() * 4 - 2;
+        this._d = random() * 4 - 2;
+    };
+    CliffordAttractorSketch.prototype.draw = function () {
+        for (var i = 0; i < this.points.length; i++) {
+            var p = this.points[i];
+            var value = this.getValue({ x: p.x, y: p.y });
+            p.vx += Math.cos(value) * 0.3;
+            p.vy += Math.sin(value) * 0.3;
+            beginShape();
+            vertex(p.x, p.y);
+            p.x += p.vx;
+            p.y += p.vy;
+            vertex(p.x, p.y);
+            endShape();
+            p.vx *= 0.99;
+            p.vy *= 0.99;
+            if (p.x > width)
+                p.x = 0;
+            if (p.y > height)
+                p.y = 0;
+            if (p.x < 0)
+                p.x = width;
+            if (p.y < 0)
+                p.y = height;
+        }
+    };
+    CliffordAttractorSketch.prototype.getValue = function (point) {
+        var scale = 0.005;
+        var x = (point.x - width / 2) * scale;
+        var y = (point.y - height / 2) * scale;
+        var x1 = sin(this._a * y) + this._c * cos(this._a * x);
+        var y1 = sin(this._b * y) + this._d * cos(this._b * x);
+        return atan2(y1 - y, x1 - x);
+    };
+    return CliffordAttractorSketch;
+}());
 var FlowFieldsSketch = (function () {
     function FlowFieldsSketch() {
     }
@@ -165,12 +221,7 @@ var FlowFieldsSketch = (function () {
         }
         endShape();
     };
-    FlowFieldsSketch.prototype.setup = function () {
-        width = windowWidth;
-        height = windowHeight;
-        createCanvas(width, height);
-        background(255);
-        colorMode(HSB, 255);
+    FlowFieldsSketch.prototype.initVars = function () {
         this.leftX = floor(width * -0.5);
         this.rightX = floor(width * 1.5);
         this.topY = floor(height * -0.5);
@@ -178,6 +229,8 @@ var FlowFieldsSketch = (function () {
         this.resolution = floor(width * 0.01);
         this.numColumns = (this.rightX - this.leftX) / this.resolution;
         this.numRows = (this.bottomY - this.topY) / this.resolution;
+    };
+    FlowFieldsSketch.prototype.initPerlinNoise = function () {
         var grid = [];
         for (var j = 0; j < this.numRows; j++) {
             var row = [];
@@ -190,6 +243,24 @@ var FlowFieldsSketch = (function () {
             }
             grid.push(row);
         }
+        return grid;
+    };
+    FlowFieldsSketch.prototype.renderFlowField = function (grid) {
+        for (var j = 0; j < this.numRows; j++) {
+            for (var i = 0; i < this.numColumns; i++) {
+                var v = p5.Vector.fromAngle(grid[j][i], 5);
+                var vx = v.x;
+                var vy = v.y;
+                noFill();
+                stroke(0);
+                push();
+                translate(i * 5, j * 5);
+                line(0, 0, vx, vy);
+                pop();
+            }
+        }
+    };
+    FlowFieldsSketch.prototype.renderLines = function (grid) {
         noFill();
         var choices = [];
         var steps = 10;
@@ -201,6 +272,15 @@ var FlowFieldsSketch = (function () {
             var y = random(height);
             this.drawLine(x, y, 1, 100, grid);
         }
+    };
+    FlowFieldsSketch.prototype.setup = function () {
+        createCanvas(windowWidth, windowHeight);
+        background(255);
+        colorMode(HSB, 255);
+        this.initVars();
+        var grid = this.initPerlinNoise();
+        this.renderFlowField(grid);
+        this.renderLines(grid);
     };
     FlowFieldsSketch.prototype.draw = function () { };
     return FlowFieldsSketch;
@@ -231,14 +311,6 @@ var hypnoticSquaresSetup = function () {
     pop();
 };
 var hypnoticSquaresDraw = function () { };
-var PolarFlowSketch = (function () {
-    function PolarFlowSketch() {
-    }
-    PolarFlowSketch.prototype.setup = function () {
-    };
-    PolarFlowSketch.prototype.draw = function () { };
-    return PolarFlowSketch;
-}());
 var DiscSketch = (function () {
     function DiscSketch() {
     }
@@ -256,7 +328,60 @@ var DiscSketch = (function () {
     DiscSketch.prototype.draw = function () { };
     return DiscSketch;
 }());
-var factory = (function () { return new DiscSketch(); })();
+var SinksSketch = (function () {
+    function SinksSketch() {
+        this.lineSize = 30;
+        this.stepSize = 1;
+        this.sinks = [];
+    }
+    SinksSketch.prototype.setup = function () {
+        createCanvas(windowWidth, windowHeight);
+        colorMode(HSB, 255);
+        background(255);
+        noFill();
+        this.sinks.push({ center: new Vector2D(width / 2, height / 2), radius: random(50, 200) });
+        this.render(20000);
+    };
+    SinksSketch.prototype.render = function (pointCount) {
+        while (pointCount > 0) {
+            var p = new Vector2D(random(width), random(height));
+            this.drawLine(p, this.lineSize);
+            pointCount--;
+        }
+    };
+    SinksSketch.prototype.drawLine = function (point, length) {
+        var hue = map(point.x * sin(point.x), -point.x, point.x, 130, 180);
+        var c = color(hue, 180, 255);
+        stroke(c);
+        beginShape();
+        while (length > 0) {
+            var value = this.getValue(point);
+            curveVertex(point.x, point.y);
+            var xStep = this.stepSize * cos(value);
+            var yStep = this.stepSize * sin(value);
+            point.x += xStep;
+            point.y += yStep;
+            length--;
+        }
+        endShape();
+    };
+    SinksSketch.prototype.getValue = function (point) {
+        for (var i = 0; i < this.sinks.length; i++) {
+            if (insideCircleBounds(point, this.sinks[i])) {
+                var polar = cartesianToPolar(point.sub(this.sinks[i].center));
+                return polar.angle - PI / 2;
+            }
+        }
+        var scaledX = point.x * 0.005;
+        var scaledY = point.y * 0.005;
+        var noiseValue = noise(scaledX, scaledY);
+        var angle = map(noiseValue, 0.0, 1.0, 0.0, PI * 2.0);
+        return angle;
+    };
+    SinksSketch.prototype.draw = function () { };
+    return SinksSketch;
+}());
+var factory = (function () { return new SinksSketch(); })();
 var setup = function () { return factory.setup(); };
 var draw = function () { return factory.draw(); };
 //# sourceMappingURL=build.js.map

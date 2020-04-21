@@ -1,12 +1,5 @@
-const insideCircleBounds = (
-  x: number,
-  y: number,
-  cx: number,
-  cy: number,
-  r: number
-): boolean => {
-  return dist(x, y, cx, cy) < r;
-};
+const insideCircleBounds = (point: Vector2D, circle: Circle): boolean =>
+  dist(point.x, point.y, circle.center.x, circle.center.y) < circle.radius;
 
 const drawSpiral = (
   x: number,

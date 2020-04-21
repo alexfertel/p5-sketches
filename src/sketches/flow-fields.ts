@@ -1,4 +1,4 @@
-class FlowFieldsSketch implements Sketch {
+class FlowFieldsSketch implements ISketch {
   public leftX: number;
   public rightX: number;
   public topY: number;
@@ -32,26 +32,17 @@ class FlowFieldsSketch implements Sketch {
     endShape();
   }
 
-  public setup(): void {
-    width = windowWidth;
-    height = windowHeight;
-    createCanvas(width, height);
-    background(255);
-    colorMode(HSB, 255);
-
+  public initVars(): void {
     this.leftX = floor(width * -0.5);
     this.rightX = floor(width * 1.5);
     this.topY = floor(height * -0.5);
     this.bottomY = floor(height * 1.5);
-    // this.leftX = 0;
-    // this.rightX = width;
-    // this.topY = 0;
-    // this.bottomY = height;
     this.resolution = floor(width * 0.01);
     this.numColumns = (this.rightX - this.leftX) / this.resolution;
     this.numRows = (this.bottomY - this.topY) / this.resolution;
-    // numRows = 100;
+  }
 
+  public initPerlinNoise(): number[][] {
     const grid = [];
     for (let j = 0; j < this.numRows; j++) {
       const row = [];
@@ -69,23 +60,28 @@ class FlowFieldsSketch implements Sketch {
       }
       grid.push(row);
     }
+    return grid;
+  }
 
-    // for (let j = 0; j < numRows; j++) {
-    //   for (let i = 0; i < numColumns; i++) {
-    //     let v = p5.Vector.fromAngle(grid[j][i], 5);
+  public renderFlowField(grid: number[][]): void {
+    for (let j = 0; j < this.numRows; j++) {
+      for (let i = 0; i < this.numColumns; i++) {
+        const v = p5.Vector.fromAngle(grid[j][i], 5);
 
-    //     let vx = v.x;
-    //     let vy = v.y;
+        const vx = v.x;
+        const vy = v.y;
 
-    //     noFill();
-    //     stroke(0);
-    //     push();
-    //     translate(i * 5, j * 5);
-    //     line(0, 0, vx, vy);
-    //     pop();
-    //   }
-    // }
+        noFill();
+        stroke(0);
+        push();
+        translate(i * 5, j * 5);
+        line(0, 0, vx, vy);
+        pop();
+      }
+    }
+  }
 
+  public renderLines(grid: number[][]): void {
     noFill();
     const choices = [];
     const steps = 10;
@@ -100,6 +96,17 @@ class FlowFieldsSketch implements Sketch {
 
       this.drawLine(x, y, 1, 100, grid);
     }
+  }
+
+  public setup(): void {
+    createCanvas(windowWidth, windowHeight);
+    background(255);
+    colorMode(HSB, 255);
+
+    this.initVars();
+    const grid = this.initPerlinNoise();
+    this.renderFlowField(grid);
+    this.renderLines(grid);
   }
 
   public draw(): void {}

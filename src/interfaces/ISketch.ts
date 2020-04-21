@@ -1,4 +1,4 @@
-interface Sketch {
+interface ISketch {
   setup: () => void;
   draw: () => void;
 }
