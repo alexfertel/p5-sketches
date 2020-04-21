@@ -42,9 +42,35 @@ var drawDisc = function (center, lineCount) {
 function inRange(x, y, matrix) {
     return 0 <= x && x < matrix.length && 0 <= y && y < matrix[0].length;
 }
-var punchOut = function (image) {
-    var currBlend = Object.getPrototypeOf(image).drawingContext.globalCompositeOperation;
-    console.log(currBlend);
+var punchOut = function (img, punch) {
+    var currBlend = img.drawingContext.globalCompositeOperation;
+    var copyArgs = [
+        punch,
+        0,
+        0,
+        punch.width,
+        punch.height,
+        0,
+        0,
+        img.width,
+        img.height
+    ];
+    img.drawingContext.globalCompositeOperation = "destination-out";
+    img.copy.apply(img, copyArgs);
+    img.drawingContext.globalCompositeOperation = currBlend;
+};
+var frame = function (radius) {
+    colorMode(RGB, 255);
+    var disc = createGraphics(width, height);
+    disc.noStroke();
+    disc.fill(color(255, 255, 255));
+    disc.rect(0, 0, width, height);
+    var img = disc.get();
+    var punch = createGraphics(width, height);
+    punch.noStroke();
+    punch.circle(width / 2, height / 2, radius);
+    punchOut(img, punch);
+    image(img, 0, 0);
 };
 var drawSquare = function (point, side) {
     push();
@@ -205,9 +231,32 @@ var hypnoticSquaresSetup = function () {
     pop();
 };
 var hypnoticSquaresDraw = function () { };
-var drawRectangle = function () {
-};
-var factory = (function () { return new FlowFieldsSketch(); })();
+var PolarFlowSketch = (function () {
+    function PolarFlowSketch() {
+    }
+    PolarFlowSketch.prototype.setup = function () {
+    };
+    PolarFlowSketch.prototype.draw = function () { };
+    return PolarFlowSketch;
+}());
+var DiscSketch = (function () {
+    function DiscSketch() {
+    }
+    DiscSketch.prototype.setup = function () {
+        createCanvas(windowWidth, windowHeight);
+        colorMode(HSL, 255);
+        var c = color(map(214, 0, 360, 0, 255), 255, map(30, 0, 100, 0, 255));
+        background(c);
+        noFill();
+        stroke(255);
+        var center = { x: width / 2, y: height / 2 };
+        drawDisc(center, random(50, 200));
+        frame(750);
+    };
+    DiscSketch.prototype.draw = function () { };
+    return DiscSketch;
+}());
+var factory = (function () { return new DiscSketch(); })();
 var setup = function () { return factory.setup(); };
 var draw = function () { return factory.draw(); };
 //# sourceMappingURL=build.js.map

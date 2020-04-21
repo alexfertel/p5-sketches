@@ -1,4 +1,8 @@
-const drawRectangle = (): void => {
-  // p.rect()
-};
+class PolarFlowSketch implements Sketch {
+  setup(): void {
+    
 
+  }
+
+  draw(): void {}
+}

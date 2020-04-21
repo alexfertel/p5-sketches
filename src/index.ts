@@ -1,6 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const factory = ((): FlowFieldsSketch => new FlowFieldsSketch())();
-// const ff = new FlowFieldsSketch();
+const factory = ((): DiscSketch => new DiscSketch())();
 
 const setup = (): void => factory.setup();
 

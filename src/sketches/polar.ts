@@ -24,33 +24,24 @@
 //   pop();
 // }
 
+class DiscSketch implements Sketch{
 
-// export function setup(): void {
-//   width = windowWidth;
-//   height = windowHeight;
-//   createCanvas(width, height);
-//   colorMode(HSL, 255);
+    setup(): void {
+      createCanvas(windowWidth, windowHeight);
+      colorMode(HSL, 255);
+    
+      const c = color(map(214, 0, 360, 0, 255), 255, map(30, 0, 100, 0, 255));
+      background(c);
+    
+      noFill();
+        
+      stroke(255);
+      const center = { x: width / 2, y: height / 2 };
+      drawDisc(center as Vector2D, random(50, 200));
+    
+      frame(750);
+    }
+    
+    draw(): void {}
+}
 
-//   const c = color(map(214, 0, 360, 0, 255), 255, map(30, 0, 100, 0, 255));
-//   background(c);
-
-//   // makeSink(width / 2, height / 2, 100, grid);
-
-//   noFill();
-
-//   // let discCount = 10;
-//   // for (let i = 0; i < discCount; i++) {
-//   //   let center = { x: random(width), y: random(height) };
-//   //   stroke(random(255), random(100, 255), random(150, 200))
-//   //   drawDisc(center, random(100));
-//   // }
-//   // stroke(255)
-
-//   stroke(255);
-//   const center = { x: width / 2, y: height / 2 };
-//   drawDisc(center, random(50, 200));
-
-//   frame(750);
-// }
-
-// export function draw(): void {}

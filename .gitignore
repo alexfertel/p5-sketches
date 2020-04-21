@@ -12,7 +12,7 @@
 
 build/*.js
 build/*.js.map
-!build/build.js
+# !build/build.js
 
 
 node_modules
