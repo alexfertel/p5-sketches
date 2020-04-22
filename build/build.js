@@ -381,7 +381,120 @@ var SinksSketch = (function () {
     SinksSketch.prototype.draw = function () { };
     return SinksSketch;
 }());
-var factory = (function () { return new SinksSketch(); })();
+var StarSystemSketch = (function () {
+    function StarSystemSketch() {
+        this._padding = 20;
+    }
+    StarSystemSketch.prototype.setup = function () {
+        createCanvas(windowWidth, windowHeight);
+        this._spaceColor = color("#222831");
+        this._frameColor = color("#eae7d9");
+        this._orbitTrajectoryColor = color("#ffecc7");
+        this._planetPalette = [
+            color("#f79071"),
+            color("#fa744f"),
+            color("#16817a"),
+            color("#ffb6b6"),
+            color("#00bdaa"),
+            color("#fe346e"),
+            color("#d7fffd"),
+            color("#024249")
+        ];
+        this._starPalette = [
+            color("#fdd998"),
+            color("#fae7cb"),
+            color("#ffb385"),
+            color("#ff7272")
+        ];
+        colorMode(HSB, 255);
+        this._canvasWidth = width - this._padding * 2;
+        this._canvasHeight = height - this._padding * 2;
+        this.sunDiameter = random(500, 1000);
+        this.sunRadius = this.sunDiameter / 2;
+        this.sunCenter = new Vector2D(random(width), height);
+        this.drawSpace();
+        this.drawSun();
+        var planetCount = 7;
+        var displacement = 200;
+        for (var i = 0; i < planetCount; i++) {
+            var radius = 250 + i * displacement + this._padding;
+            this.drawOrbit(radius, "arc");
+            push();
+            translate(this.sunCenter.x, this.sunCenter.y);
+            rotate(PI);
+            var distance = this.sunRadius + radius / 2;
+            stroke(random(255), 255, 255);
+            var angle = random(QUARTER_PI, PI - QUARTER_PI);
+            var center = new Vector2D(distance * cos(angle), distance * sin(angle));
+            var planet = { center: center, radius: random(20, 80) };
+            this.drawPlanet(planet);
+            pop();
+        }
+        this.drawFrame();
+        this.drawNoise();
+    };
+    StarSystemSketch.prototype.drawPlanet = function (planet) {
+        push();
+        noStroke();
+        fill(random(this._planetPalette));
+        circle(planet.center.x, planet.center.y, planet.radius);
+        pop();
+    };
+    StarSystemSketch.prototype.drawSpace = function () {
+        push();
+        noStroke();
+        fill(this._spaceColor);
+        rect(this._padding, this._padding, this._canvasWidth, this._canvasHeight);
+        for (var i = 0; i < 7500; i++) {
+            stroke(color(255, random(0, 150)));
+            point(random(width), random(height));
+        }
+        pop();
+    };
+    StarSystemSketch.prototype.drawOrbit = function (scaleFactor, type) {
+        stroke(this._orbitTrajectoryColor);
+        if (type === "arc") {
+            noFill();
+            this.drawEllipse(this.sunCenter, this.sunDiameter + scaleFactor, this.sunDiameter + scaleFactor, 30);
+        }
+        else {
+            console.log("Not an arc");
+        }
+    };
+    StarSystemSketch.prototype.drawEllipse = function (center, width, height, arcCount) {
+        var angularVelocity = PI / arcCount;
+        var angle = 0;
+        while (angle < TWO_PI) {
+            arc(center.x, center.y, width, height, angle, angle + angularVelocity / 2);
+            angle += angularVelocity;
+        }
+    };
+    StarSystemSketch.prototype.drawSun = function () {
+        noStroke();
+        var c = random(this._starPalette);
+        fill(c);
+        circle(this.sunCenter.x, this.sunCenter.y, this.sunDiameter);
+    };
+    StarSystemSketch.prototype.drawFrame = function () {
+        noStroke();
+        var c = this._frameColor;
+        fill(c);
+        rect(0, 0, width, this._padding);
+        rect(0, 0, this._padding, height);
+        rect(width - this._padding, 0, this._padding, height);
+        rect(0, height - this._padding, width, this._padding);
+    };
+    StarSystemSketch.prototype.drawNoise = function () {
+        for (var i = 0; i < width; i++)
+            for (var j = 0; j < width; j++) {
+                stroke(0, map(random(), 0, 1, 0, 100));
+                point(i, j);
+            }
+    };
+    StarSystemSketch.prototype.draw = function () { };
+    return StarSystemSketch;
+}());
+var factory = (function () { return new StarSystemSketch(); })();
 var setup = function () { return factory.setup(); };
 var draw = function () { return factory.draw(); };
 //# sourceMappingURL=build.js.map
