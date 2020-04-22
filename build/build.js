@@ -409,7 +409,7 @@ var StarSystemSketch = (function () {
         colorMode(HSB, 255);
         this._canvasWidth = width - this._padding * 2;
         this._canvasHeight = height - this._padding * 2;
-        this.sunDiameter = random(500, 1000);
+        this.sunDiameter = random(500, 750);
         this.sunRadius = this.sunDiameter / 2;
         this.sunCenter = new Vector2D(random(width), height);
         this.drawSpace();
@@ -417,14 +417,14 @@ var StarSystemSketch = (function () {
         var planetCount = 7;
         var displacement = 200;
         for (var i = 0; i < planetCount; i++) {
-            var radius = 250 + i * displacement + this._padding;
+            var radius = 150 + i * displacement + this._padding;
             this.drawOrbit(radius, "arc");
             push();
             translate(this.sunCenter.x, this.sunCenter.y);
             rotate(PI);
             var distance = this.sunRadius + radius / 2;
             stroke(random(255), 255, 255);
-            var angle = random(QUARTER_PI, PI - QUARTER_PI);
+            var angle = random(QUARTER_PI - map(width - this.sunCenter.x, 0, width, 0, QUARTER_PI), PI - QUARTER_PI - map(this.sunCenter.x, 0, width, 0, QUARTER_PI));
             var center = new Vector2D(distance * cos(angle), distance * sin(angle));
             var planet = { center: center, radius: random(20, 80) };
             this.drawPlanet(planet);
@@ -436,6 +436,8 @@ var StarSystemSketch = (function () {
     StarSystemSketch.prototype.drawPlanet = function (planet) {
         push();
         noStroke();
+        fill(this._spaceColor);
+        circle(planet.center.x, planet.center.y, planet.radius + 25);
         fill(random(this._planetPalette));
         circle(planet.center.x, planet.center.y, planet.radius);
         pop();
@@ -485,8 +487,8 @@ var StarSystemSketch = (function () {
         rect(0, height - this._padding, width, this._padding);
     };
     StarSystemSketch.prototype.drawNoise = function () {
-        for (var i = 0; i < width; i++)
-            for (var j = 0; j < width; j++) {
+        for (var i = this._padding; i < width - this._padding; i++)
+            for (var j = this._padding; j < height - this._padding; j++) {
                 stroke(0, map(random(), 0, 1, 0, 100));
                 point(i, j);
             }

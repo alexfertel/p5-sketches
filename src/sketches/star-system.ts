@@ -57,9 +57,8 @@ class StarSystemSketch implements ISketch {
     this._canvasWidth = width - this._padding * 2;
     this._canvasHeight = height - this._padding * 2;
 
-    this.sunDiameter = random(500, 1000);
+    this.sunDiameter = random(500, 750);
     this.sunRadius = this.sunDiameter / 2;
-    // this.sunCenter = new Vector2D(width / 2, height / 2);
     this.sunCenter = new Vector2D(random(width), height);
 
     this.drawSpace();
@@ -68,7 +67,7 @@ class StarSystemSketch implements ISketch {
     const planetCount = 7;
     const displacement = 200;
     for (let i = 0; i < planetCount; i++) {
-      const radius = 250 + i * displacement + this._padding;
+      const radius = 150 + i * displacement + this._padding;
       this.drawOrbit(radius, "arc");
 
       push();
@@ -76,7 +75,7 @@ class StarSystemSketch implements ISketch {
       rotate(PI);
       const distance = this.sunRadius + radius / 2;
       stroke(random(255), 255, 255);
-      const angle = random(QUARTER_PI, PI - QUARTER_PI);
+      const angle = random(QUARTER_PI - map(width - this.sunCenter.x, 0, width, 0, QUARTER_PI), PI - QUARTER_PI - map(this.sunCenter.x, 0, width, 0, QUARTER_PI) );
       const center = new Vector2D(distance * cos(angle), distance * sin(angle));
       const planet = { center: center, radius: random(20, 80) } as Circle;
       this.drawPlanet(planet);
@@ -90,6 +89,8 @@ class StarSystemSketch implements ISketch {
   drawPlanet(planet: Circle): void {
     push();
     noStroke();
+    fill(this._spaceColor);
+    circle(planet.center.x, planet.center.y, planet.radius + 25);
     fill(random(this._planetPalette));
     circle(planet.center.x, planet.center.y, planet.radius);
     pop();
@@ -162,7 +163,7 @@ class StarSystemSketch implements ISketch {
   }
 
   drawNoise(): void {
-    for (let i = 0; i < width; i++) for (let j = 0; j < width; j++) {
+    for (let i = this._padding; i < width - this._padding; i++) for (let j = this._padding; j < height - this._padding; j++) {
         stroke(0, map(random(), 0, 1, 0, 100));
         point(i, j);
     }
