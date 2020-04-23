@@ -4,9 +4,9 @@ interface Circle {
 }
 
 class SinksSketch implements ISketch, ICanvasMapper {
-  lineSize = 30;
-  stepSize = 1;
-  sinks: Circle[] = [];
+  public lineSize = 100;
+  public stepSize = 50;
+  public sinks: Circle[] = [];
 
   setup(): void {
     createCanvas(windowWidth, windowHeight);
@@ -20,29 +20,41 @@ class SinksSketch implements ISketch, ICanvasMapper {
     
     // for(let i = 0; i < 5; i++)
     //   this.sinks.push({ center: new Vector2D(random(width), random(height)), radius: random(50, 100) });
-    this.sinks.push({ center: new Vector2D(width / 2, height / 2), radius: random(50, 200) });
+    // this.sinks.push({ center: new Vector2D(width / 2, height / 2), radius: random(50, 200) });
 
-    this.render(20000);
+    this.render(10000);
   }
 
   render(pointCount: number): void {
     while (pointCount > 0) {
       const p = new Vector2D(random(width), random(height));
 
-      this.drawLine(p, this.lineSize);
+      this.drawLine(p);
 
       pointCount--;
     }
   }
 
-  drawLine(point: Vector2D, length: number): void {
-    const hue = map(point.x * sin(point.x), -point.x, point.x, 130, 180);
+  drawLine(point: Vector2D): void {
+    let stepCount = this.lineSize / this.stepSize;
+    
+    colorMode(RGB, 255, 255, 255, 100);
+    const c1 = {r: 255, g: 0, b: 0};
+    const c2 = {r: 0, g: 0, b: 255};
 
-    const c = color(hue, 180, 255);
-    stroke(c);
   
     beginShape();
-    while (length > 0) {
+    curveVertex(point.x, point.y);
+    while (stepCount > 0) {
+      // const r = map(stepCount, this.lineSize / this.stepSize, 0, c1.r, c2.r);
+      // const g = map(stepCount, this.lineSize / this.stepSize, 0, c1.g, c2.g);
+      // const b = map(stepCount, this.lineSize / this.stepSize, 0, c1.b, c2.b);
+      const r = map(stepCount, this.lineSize / this.stepSize, 0, 0, c2.r);
+      const g = map(stepCount, this.lineSize / this.stepSize, 0, 0, c2.g);
+      const b = map(stepCount, this.lineSize / this.stepSize, 0, 0, c2.b);
+      const c = color(r, g, b);
+      stroke(c);
+      // stroke(color(0,0,map(stepCount, 0, this.lineSize, )));
       const value = this.getValue(point);
 
       curveVertex(point.x, point.y);
@@ -51,8 +63,9 @@ class SinksSketch implements ISketch, ICanvasMapper {
       const yStep = this.stepSize * sin(value);
       point.x += xStep;
       point.y += yStep;
-      length--;
+      stepCount--;
     }
+    curveVertex(point.x, point.y);
     endShape();
   }
 
@@ -64,10 +77,10 @@ class SinksSketch implements ISketch, ICanvasMapper {
       }
     }
 
-    const scaledX = point.x * 0.005;
-    const scaledY = point.y * 0.005;
+    const scaledX = point.x * 0.001;
+    const scaledY = point.y * 0.001;
     const noiseValue = noise(scaledX, scaledY);
-    const angle = map(noiseValue, 0.0, 1.0, 0.0, PI * 2.0);
+    const angle = map(noiseValue, 0.0, 1.0, 0.0, TWO_PI);
 
     return angle;
   }

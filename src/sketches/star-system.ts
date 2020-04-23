@@ -83,7 +83,7 @@ class StarSystemSketch implements ISketch {
     }
 
     this.drawFrame();
-    this.drawNoise();
+    drawNoise(new Vector2D(this._padding, this._padding), new Vector2D(width - this._padding, height - this._padding), 1);
   }
 
   drawPlanet(planet: Circle): void {
@@ -162,12 +162,6 @@ class StarSystemSketch implements ISketch {
     rect(0, height - this._padding, width, this._padding);
   }
 
-  drawNoise(): void {
-    for (let i = this._padding; i < width - this._padding; i++) for (let j = this._padding; j < height - this._padding; j++) {
-        stroke(0, map(random(), 0, 1, 0, 100));
-        point(i, j);
-    }
-  }
 
   draw(): void {}
 }

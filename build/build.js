@@ -42,6 +42,13 @@ var drawDisc = function (center, lineCount) {
 function inRange(x, y, matrix) {
     return 0 <= x && x < matrix.length && 0 <= y && y < matrix[0].length;
 }
+var drawNoise = function (start, stop, step) {
+    for (var i = start.x; i < stop.x; i += step)
+        for (var j = start.y; j < stop.y; j += step) {
+            stroke(0, map(random(), 0, 1, 0, 100));
+            point(i, j);
+        }
+};
 var punchOut = function (img, punch) {
     var currBlend = img.drawingContext.globalCompositeOperation;
     var copyArgs = [
@@ -103,6 +110,7 @@ var Vector2D = (function () {
     Vector2D.prototype.scale = function (factor) {
         return new Vector2D(this.x * factor, this.y * factor);
     };
+    Vector2D.fromVector = function (vector) { return new Vector2D(vector.x, vector.y); };
     return Vector2D;
 }());
 var PolarPoint = (function () {
@@ -285,6 +293,102 @@ var FlowFieldsSketch = (function () {
     FlowFieldsSketch.prototype.draw = function () { };
     return FlowFieldsSketch;
 }());
+var FunnySquare = (function () {
+    function FunnySquare(topLeft, topRight, bottomRight, bottomLeft) {
+        this.topLeft = topLeft;
+        this.topRight = topRight;
+        this.bottomRight = bottomRight;
+        this.bottomLeft = bottomLeft;
+    }
+    return FunnySquare;
+}());
+var FunnySquaresSketch = (function () {
+    function FunnySquaresSketch() {
+        this.grid = [];
+        this.squareSide = 45;
+        this.padding = 50;
+        this.spacing = 10;
+    }
+    FunnySquaresSketch.prototype.setup = function () {
+        createCanvas(windowWidth, windowHeight);
+        colorMode(HSL, 360, 100, 100, 255);
+        strokeWeight(3);
+        this.backgroundTopColor = color(204.07, 69.87, 53.14);
+        this.backgroundBottomColor = color(359.28, 93.26, 65.1);
+        this.squaresPalette = [
+            color(0, 0, 0),
+            color(0, 0, 255)
+        ];
+        background(this.backgroundTopColor);
+        this.drawBgHalf();
+        this.initGrid();
+        drawNoise(new Vector2D(0, 0), new Vector2D(width, height), 5);
+        this.renderSquares();
+    };
+    FunnySquaresSketch.prototype.drawBgHalf = function () {
+        noStroke();
+        fill(this.backgroundBottomColor);
+        if (random() < 0.5) {
+            beginShape();
+            vertex(0, 0);
+            vertex(width, 0);
+            vertex(0, height);
+            endShape(CLOSE);
+        }
+        else {
+            beginShape();
+            vertex(width, 0);
+            vertex(width, height);
+            vertex(0, height);
+            endShape(CLOSE);
+        }
+    };
+    FunnySquaresSketch.prototype.initGrid = function () {
+        var cols = floor((width - this.padding * 2) / (this.squareSide + this.spacing));
+        var rows = floor((height - this.padding * 2) / (this.squareSide + this.spacing));
+        for (var i = 0; i < rows; i++) {
+            var row = [];
+            for (var j = 0; j < cols; j++) {
+                var tl = new Vector2D(j * (this.squareSide + this.spacing), i * (this.squareSide + this.spacing));
+                var tr = new Vector2D(tl.x + this.squareSide, tl.y);
+                var br = new Vector2D(tl.x + this.squareSide, tl.y + this.squareSide);
+                var bl = new Vector2D(tl.x, tl.y + this.squareSide);
+                row.push(new FunnySquare(tl, tr, br, bl));
+            }
+            this.grid.push(row);
+        }
+        for (var i = 0; i < rows; i++) {
+            for (var j = 0; j < cols; j++) {
+                var fs = this.grid[i][j];
+                fs.topLeft = fs.topLeft.add(new Vector2D(random(-this.spacing, this.spacing), random(-this.spacing, this.spacing)));
+                fs.topRight = fs.topRight.add(new Vector2D(random(-this.spacing, this.spacing), random(-this.spacing, this.spacing)));
+                fs.bottomRight = fs.bottomRight.add(new Vector2D(random(-this.spacing, this.spacing), random(-this.spacing, this.spacing)));
+                fs.bottomLeft = fs.bottomLeft.add(new Vector2D(random(-this.spacing, this.spacing), random(-this.spacing, this.spacing)));
+            }
+        }
+    };
+    FunnySquaresSketch.prototype.renderSquares = function () {
+        push();
+        noFill();
+        translate(this.padding + this.spacing, this.padding + this.spacing);
+        for (var j = 0; j < this.grid.length; j++) {
+            for (var i = 0; i < this.grid[0].length; i++) {
+                if (random() < 0.3)
+                    continue;
+                beginShape();
+                stroke(random(this.squaresPalette));
+                vertex(this.grid[j][i].topLeft.x, this.grid[j][i].topLeft.y);
+                vertex(this.grid[j][i].topRight.x, this.grid[j][i].topRight.y);
+                vertex(this.grid[j][i].bottomRight.x, this.grid[j][i].bottomRight.y);
+                vertex(this.grid[j][i].bottomLeft.x, this.grid[j][i].bottomLeft.y);
+                endShape(CLOSE);
+            }
+        }
+        pop();
+    };
+    FunnySquaresSketch.prototype.draw = function () { };
+    return FunnySquaresSketch;
+}());
 var hypnoticSquaresSetup = function () {
     createCanvas(windowWidth, windowHeight);
     colorMode(HSL, 255);
@@ -330,8 +434,8 @@ var DiscSketch = (function () {
 }());
 var SinksSketch = (function () {
     function SinksSketch() {
-        this.lineSize = 30;
-        this.stepSize = 1;
+        this.lineSize = 100;
+        this.stepSize = 50;
         this.sinks = [];
     }
     SinksSketch.prototype.setup = function () {
@@ -339,30 +443,37 @@ var SinksSketch = (function () {
         colorMode(HSB, 255);
         background(255);
         noFill();
-        this.sinks.push({ center: new Vector2D(width / 2, height / 2), radius: random(50, 200) });
-        this.render(20000);
+        this.render(10000);
     };
     SinksSketch.prototype.render = function (pointCount) {
         while (pointCount > 0) {
             var p = new Vector2D(random(width), random(height));
-            this.drawLine(p, this.lineSize);
+            this.drawLine(p);
             pointCount--;
         }
     };
-    SinksSketch.prototype.drawLine = function (point, length) {
-        var hue = map(point.x * sin(point.x), -point.x, point.x, 130, 180);
-        var c = color(hue, 180, 255);
-        stroke(c);
+    SinksSketch.prototype.drawLine = function (point) {
+        var stepCount = this.lineSize / this.stepSize;
+        colorMode(RGB, 255, 255, 255, 100);
+        var c1 = { r: 255, g: 0, b: 0 };
+        var c2 = { r: 0, g: 0, b: 255 };
         beginShape();
-        while (length > 0) {
+        curveVertex(point.x, point.y);
+        while (stepCount > 0) {
+            var r = map(stepCount, this.lineSize / this.stepSize, 0, 0, c2.r);
+            var g = map(stepCount, this.lineSize / this.stepSize, 0, 0, c2.g);
+            var b = map(stepCount, this.lineSize / this.stepSize, 0, 0, c2.b);
+            var c = color(r, g, b);
+            stroke(c);
             var value = this.getValue(point);
             curveVertex(point.x, point.y);
             var xStep = this.stepSize * cos(value);
             var yStep = this.stepSize * sin(value);
             point.x += xStep;
             point.y += yStep;
-            length--;
+            stepCount--;
         }
+        curveVertex(point.x, point.y);
         endShape();
     };
     SinksSketch.prototype.getValue = function (point) {
@@ -372,15 +483,79 @@ var SinksSketch = (function () {
                 return polar.angle - PI / 2;
             }
         }
-        var scaledX = point.x * 0.005;
-        var scaledY = point.y * 0.005;
+        var scaledX = point.x * 0.001;
+        var scaledY = point.y * 0.001;
         var noiseValue = noise(scaledX, scaledY);
-        var angle = map(noiseValue, 0.0, 1.0, 0.0, PI * 2.0);
+        var angle = map(noiseValue, 0.0, 1.0, 0.0, TWO_PI);
         return angle;
     };
     SinksSketch.prototype.draw = function () { };
     return SinksSketch;
 }());
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var StarFieldSketch = (function (_super) {
+    __extends(StarFieldSketch, _super);
+    function StarFieldSketch() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.lineSize = 100;
+        _this.stepSize = 10;
+        return _this;
+    }
+    StarFieldSketch.prototype.render = function (pointCount) {
+        var test = 2000;
+        while (test > 0) {
+            var p = new Vector2D(random(width), random(height));
+            this.drawPenLike(p);
+            test--;
+        }
+    };
+    StarFieldSketch.prototype.drawPenLike = function (point) {
+        stroke(0);
+        var points = [Vector2D.fromVector(point)];
+        var steps = this.lineSize / this.stepSize;
+        while (steps > 0) {
+            var value = this.getValue(point);
+            var xStep = this.stepSize * cos(value);
+            var yStep = this.stepSize * sin(value);
+            point.x += xStep;
+            point.y += yStep;
+            points.push(Vector2D.fromVector(point));
+            steps--;
+        }
+        for (var i = 0; i < points.length - 1; i++) {
+            this.drawCustomLine(points[i], points[i + 1], 2);
+        }
+    };
+    StarFieldSketch.prototype.drawCustomLine = function (start, end, weight) {
+        if (dist(start.x, start.y, end.x, end.y) < weight)
+            line(start.x, start.y, end.x, end.y);
+        for (var i = 0; i < weight; i++) {
+            var lineStart = new Vector2D(weight * cos(random(TWO_PI)), weight * sin(random(TWO_PI)));
+            var lineEnd = new Vector2D(weight * cos(random(TWO_PI)), weight * sin(random(TWO_PI)));
+            line(start.x + lineStart.x, start.y + lineStart.y, end.x + lineEnd.x, end.y + lineEnd.y);
+        }
+    };
+    StarFieldSketch.prototype.getValue = function (point) {
+        var scaledX = point.x * 0.001;
+        var scaledY = point.y * 0.001;
+        var noiseValue = noise(scaledX, scaledY);
+        var angle = map(noiseValue, 0.0, 1.0, 0.0, PI * 2.0);
+        return angle;
+    };
+    return StarFieldSketch;
+}(SinksSketch));
 var StarSystemSketch = (function () {
     function StarSystemSketch() {
         this._padding = 20;
@@ -431,7 +606,7 @@ var StarSystemSketch = (function () {
             pop();
         }
         this.drawFrame();
-        this.drawNoise();
+        drawNoise(new Vector2D(this._padding, this._padding), new Vector2D(width - this._padding, height - this._padding), 1);
     };
     StarSystemSketch.prototype.drawPlanet = function (planet) {
         push();
@@ -486,17 +661,10 @@ var StarSystemSketch = (function () {
         rect(width - this._padding, 0, this._padding, height);
         rect(0, height - this._padding, width, this._padding);
     };
-    StarSystemSketch.prototype.drawNoise = function () {
-        for (var i = this._padding; i < width - this._padding; i++)
-            for (var j = this._padding; j < height - this._padding; j++) {
-                stroke(0, map(random(), 0, 1, 0, 100));
-                point(i, j);
-            }
-    };
     StarSystemSketch.prototype.draw = function () { };
     return StarSystemSketch;
 }());
-var factory = (function () { return new StarSystemSketch(); })();
+var factory = (function () { return new FunnySquaresSketch(); })();
 var setup = function () { return factory.setup(); };
 var draw = function () { return factory.draw(); };
 //# sourceMappingURL=build.js.map

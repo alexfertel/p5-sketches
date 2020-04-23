@@ -12,6 +12,8 @@ class Vector2D {
   scale(factor: number): Vector2D {
     return new Vector2D(this.x * factor, this.y * factor);
   }
+
+  static fromVector = (vector: Vector2D): Vector2D => new Vector2D(vector.x, vector.y);
 }
 
 class PolarPoint {
