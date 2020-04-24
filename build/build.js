@@ -30,6 +30,16 @@ var drawArc = function (x, y, r, theta, alpha, length) {
     }
     endShape();
 };
+var drawArcWithCustomPen = function (x, y, r, theta, alpha, length, pen) {
+    beginShape();
+    while (length > 0) {
+        var point_3 = polarToCartesian(new PolarPoint(r, theta));
+        pen();
+        theta += alpha;
+        length--;
+    }
+    endShape();
+};
 var drawDisc = function (center, lineCount) {
     for (var i = 0; i < lineCount; i++) {
         var theta = random(PI * 2);
@@ -42,13 +52,73 @@ var drawDisc = function (center, lineCount) {
 function inRange(x, y, matrix) {
     return 0 <= x && x < matrix.length && 0 <= y && y < matrix[0].length;
 }
-var drawNoise = function (start, stop, step) {
+var drawNoise = function (start, stop, step, strokeSetter) {
     for (var i = start.x; i < stop.x; i += step)
         for (var j = start.y; j < stop.y; j += step) {
-            stroke(0, map(random(), 0, 1, 0, 100));
+            strokeSetter();
             point(i, j);
         }
 };
+var PlanetGenerator = (function () {
+    function PlanetGenerator() {
+    }
+    PlanetGenerator.drawAt = function (origin, func) {
+        push();
+        translate(origin.x, origin.y);
+        func();
+        pop();
+    };
+    PlanetGenerator.regular = function (origin, radius) {
+        PlanetGenerator.drawAt(origin, function () {
+            circle(0, 0, math.randomInt(100));
+        });
+    };
+    PlanetGenerator.ringed = function (origin, radius) {
+        var genRing = function (count, width, height, angle, spacing, strokeSetter, starBodyDrawer) {
+            var drawRingArcs = function (start, stop) {
+                noFill();
+                strokeSetter();
+                for (var i = 0; i < count; i++) {
+                    arc(0, 0, width + i * spacing, height + (i * spacing) / 2, start, stop);
+                }
+            };
+            var drawDust = function (start, stop, density) {
+                var angularVelocity = (stop - start) / density;
+                push();
+                rotate(start);
+                stroke(0, 0, 100, 30);
+                for (var i = 0; i < density; i++)
+                    for (var j = 1; j < count + 1; j++)
+                        point((width / 2 + random(spacing * j)) * cos(angularVelocity * i), (height / 2 + random((spacing / 2) * j)) *
+                            sin(angularVelocity * i));
+                pop();
+            };
+            push();
+            rotate(angle);
+            strokeWeight(1);
+            drawRingArcs(0, 180);
+            drawDust(0, 180, 1000);
+            starBodyDrawer();
+            drawRingArcs(180, 360);
+            drawDust(180, 360, 1000);
+            pop();
+        };
+        PlanetGenerator.drawAt(origin, function () {
+            push();
+            angleMode(DEGREES);
+            var radius = math.randomInt(50, 250);
+            genRing(random(4, 10), random((radius * 3) / 2, radius * 4), random(0, radius), random(360), random(5, 50), function () {
+                stroke(0, 0, 100, 5);
+            }, function () {
+                fill(0, 0, 0);
+                stroke(0, 0, 100, 100);
+                circle(0, 0, radius);
+            });
+            pop();
+        });
+    };
+    return PlanetGenerator;
+}());
 var punchOut = function (img, punch) {
     var currBlend = img.drawingContext.globalCompositeOperation;
     var copyArgs = [
@@ -111,6 +181,9 @@ var Vector2D = (function () {
         return new Vector2D(this.x * factor, this.y * factor);
     };
     Vector2D.fromVector = function (vector) { return new Vector2D(vector.x, vector.y); };
+    Vector2D.origin = function () { return new Vector2D(0, 0); };
+    Vector2D.center = function () { return new Vector2D(width / 2, height / 2); };
+    Vector2D.end = function () { return new Vector2D(width, height); };
     return Vector2D;
 }());
 var PolarPoint = (function () {
@@ -322,7 +395,9 @@ var FunnySquaresSketch = (function () {
         background(this.backgroundTopColor);
         this.drawBgHalf();
         this.initGrid();
-        drawNoise(new Vector2D(0, 0), new Vector2D(width, height), 5);
+        drawNoise(new Vector2D(0, 0), new Vector2D(width, height), 5, function () {
+            stroke(0, map(random(), 0, 1, 0, 100));
+        });
         this.renderSquares();
     };
     FunnySquaresSketch.prototype.drawBgHalf = function () {
@@ -404,12 +479,12 @@ var hypnoticSquaresSetup = function () {
     translate(width / 6 + squareSide / 2, height / 6 + squareSide / 2);
     for (var i = 0; i < rowCount; i++) {
         for (var j = 0; j < columnCount; j++) {
-            var point_3 = new Vector2D(j * squareSide, i * squareSide);
+            var point_4 = new Vector2D(j * squareSide, i * squareSide);
             var side = squareSide;
             var step = side / 4;
             var minSize = 5;
             var direction = new Vector2D(random(-20, 20), random(-20, 20)).scale(step / (side - minSize));
-            drawSquares(point_3, side, step, minSize, direction);
+            drawSquares(point_4, side, step, minSize, direction);
         }
     }
     pop();
@@ -606,7 +681,9 @@ var StarSystemSketch = (function () {
             pop();
         }
         this.drawFrame();
-        drawNoise(new Vector2D(this._padding, this._padding), new Vector2D(width - this._padding, height - this._padding), 1);
+        drawNoise(new Vector2D(this._padding, this._padding), new Vector2D(width - this._padding, height - this._padding), 1, function () {
+            stroke(0, map(random(), 0, 1, 0, 100));
+        });
     };
     StarSystemSketch.prototype.drawPlanet = function (planet) {
         push();
@@ -664,7 +741,17 @@ var StarSystemSketch = (function () {
     StarSystemSketch.prototype.draw = function () { };
     return StarSystemSketch;
 }());
-var factory = (function () { return new FunnySquaresSketch(); })();
-var setup = function () { return factory.setup(); };
-var draw = function () { return factory.draw(); };
+var setup = function () {
+    createCanvas(windowWidth, windowHeight);
+    background(0);
+    colorMode(HSB, 360, 100, 100, 100);
+    drawNoise(Vector2D.origin(), new Vector2D(width, height), 2, function () {
+        if (random() < 0.008)
+            stroke(255, map(random(), 0, 1, 0, 50));
+        else
+            stroke(255, 0);
+    });
+    PlanetGenerator.ringed(Vector2D.center(), 200);
+};
+var draw = function () { };
 //# sourceMappingURL=build.js.map

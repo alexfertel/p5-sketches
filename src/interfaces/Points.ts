@@ -14,6 +14,9 @@ class Vector2D {
   }
 
   static fromVector = (vector: Vector2D): Vector2D => new Vector2D(vector.x, vector.y);
+  static origin = (): Vector2D => new Vector2D(0, 0);
+  static center = (): Vector2D => new Vector2D(width / 2, height / 2);
+  static end = (): Vector2D => new Vector2D(width, height);
 }
 
 class PolarPoint {

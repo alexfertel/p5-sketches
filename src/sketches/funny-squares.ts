@@ -42,7 +42,9 @@ class FunnySquaresSketch implements ISketch {
 
     this.initGrid();
 
-    drawNoise(new Vector2D(0, 0), new Vector2D(width, height), 5);
+    drawNoise(new Vector2D(0, 0), new Vector2D(width, height), 5, () => {
+      stroke(0, map(random(), 0, 1, 0, 100));
+    });
     this.renderSquares();
   }
 

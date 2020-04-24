@@ -39,6 +39,26 @@ const drawArc = (
   endShape();
 };
 
+const drawArcWithCustomPen = (
+  x: number,
+  y: number,
+  r: number,
+  theta: number,
+  alpha: number,
+  length: number,
+  pen: ()=> void
+): void => {
+  beginShape();
+  while (length > 0) {
+    const point = polarToCartesian(new PolarPoint(r, theta));
+    pen();
+    theta += alpha;
+    length--;
+  }
+  endShape();
+};
+
+
 const drawDisc = (center: Vector2D, lineCount: number): void => {
   for (let i = 0; i < lineCount; i++) {
     const theta = random(PI * 2);
