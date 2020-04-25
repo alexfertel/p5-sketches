@@ -59,66 +59,76 @@ var drawNoise = function (start, stop, step, strokeSetter) {
             point(i, j);
         }
 };
-var PlanetGenerator = (function () {
-    function PlanetGenerator() {
+var drawAt = function (origin, func) {
+    push();
+    translate(origin.x, origin.y);
+    func();
+    pop();
+};
+var regular = function (origin, radius) {
+    drawAt(origin, function () {
+        circle(0, 0, math.randomInt(100));
+    });
+};
+var drawRingArcs = function (start, stop, width, height, strokeSetter) {
+    noFill();
+    strokeSetter();
+    arc(0, 0, width, height, start, stop);
+};
+var drawDust = function (start, stop, width, height, widthSpacing, heightSpacing, density) {
+    var angularVelocity = (stop - start) / density;
+    push();
+    rotate(start);
+    for (var i = density; i >= 0; i--) {
+        var x = (width + random(widthSpacing)) * cos(angularVelocity * i);
+        var y = (height + random(heightSpacing)) * sin(angularVelocity * i);
+        var distance = dist(0, 0, x, y);
+        var hue_1 = map(distance, 0, windowHeight / 2 + windowWidth / 2, 410, 250);
+        var alpha_2 = map(distance, 0, windowHeight / 2 + windowWidth / 2, 100, 0);
+        var saturation_1 = widthSpacing === 0 ? 70 : 100;
+        var c = color(hue_1 % 360, saturation_1, alpha_2, alpha_2);
+        if (widthSpacing === 0)
+            strokeWeight(3);
+        stroke(c);
+        noFill();
+        point(x, y);
     }
-    PlanetGenerator.drawAt = function (origin, func) {
+    pop();
+};
+var genRing = function (count, width, height, angle, spacing, strokeSetter, starBodyDrawer) {
+    push();
+    rotate(angle);
+    strokeWeight(1);
+    for (var i = 0; i < count; i++) {
+        drawDust(0, 180, width / 2, height / 2, spacing * i, spacing / 20 * i, 5000);
+    }
+    starBodyDrawer();
+    for (var i = 0; i < count; i++) {
+        drawDust(180, 360, width / 2, height / 2, spacing * i, spacing / 10 * i, 5000);
+    }
+    pop();
+};
+var ringed = function (origin, radius) {
+    drawAt(origin, function () {
         push();
-        translate(origin.x, origin.y);
-        func();
+        angleMode(DEGREES);
+        var radius = random(50, 100);
+        genRing(45, radius, 20, random(130, 180), 30, function () {
+            push();
+            noStroke();
+            noFill();
+            pop();
+        }, function () {
+            push();
+            fill(0, 0, 0);
+            strokeWeight(3);
+            stroke(50, 70, 100, 100);
+            circle(0, 0, radius);
+            pop();
+        });
         pop();
-    };
-    PlanetGenerator.regular = function (origin, radius) {
-        PlanetGenerator.drawAt(origin, function () {
-            circle(0, 0, math.randomInt(100));
-        });
-    };
-    PlanetGenerator.ringed = function (origin, radius) {
-        var genRing = function (count, width, height, angle, spacing, strokeSetter, starBodyDrawer) {
-            var drawRingArcs = function (start, stop) {
-                noFill();
-                strokeSetter();
-                for (var i = 0; i < count; i++) {
-                    arc(0, 0, width + i * spacing, height + (i * spacing) / 2, start, stop);
-                }
-            };
-            var drawDust = function (start, stop, density) {
-                var angularVelocity = (stop - start) / density;
-                push();
-                rotate(start);
-                stroke(0, 0, 100, 30);
-                for (var i = 0; i < density; i++)
-                    for (var j = 1; j < count + 1; j++)
-                        point((width / 2 + random(spacing * j)) * cos(angularVelocity * i), (height / 2 + random((spacing / 2) * j)) *
-                            sin(angularVelocity * i));
-                pop();
-            };
-            push();
-            rotate(angle);
-            strokeWeight(1);
-            drawRingArcs(0, 180);
-            drawDust(0, 180, 1000);
-            starBodyDrawer();
-            drawRingArcs(180, 360);
-            drawDust(180, 360, 1000);
-            pop();
-        };
-        PlanetGenerator.drawAt(origin, function () {
-            push();
-            angleMode(DEGREES);
-            var radius = math.randomInt(50, 250);
-            genRing(random(4, 10), random((radius * 3) / 2, radius * 4), random(0, radius), random(360), random(5, 50), function () {
-                stroke(0, 0, 100, 5);
-            }, function () {
-                fill(0, 0, 0);
-                stroke(0, 0, 100, 100);
-                circle(0, 0, radius);
-            });
-            pop();
-        });
-    };
-    return PlanetGenerator;
-}());
+    });
+};
 var punchOut = function (img, punch) {
     var currBlend = img.drawingContext.globalCompositeOperation;
     var copyArgs = [
@@ -751,7 +761,7 @@ var setup = function () {
         else
             stroke(255, 0);
     });
-    PlanetGenerator.ringed(Vector2D.center(), 200);
+    ringed(Vector2D.center(), 200);
 };
 var draw = function () { };
 //# sourceMappingURL=build.js.map

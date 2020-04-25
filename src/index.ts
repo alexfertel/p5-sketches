@@ -16,7 +16,7 @@ const setup = (): void => {
     else stroke(255, 0);
   });
 
-  PlanetGenerator.ringed(Vector2D.center(), 200);
+  ringed(Vector2D.center(), 200);
 };
 
 const draw = (): void => {};
