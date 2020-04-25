@@ -5,12 +5,6 @@ const drawAt = (origin: Vector2D, func: () => void): void => {
   pop();
 };
 
-const regular = (origin: Vector2D, radius: number): void => {
-  drawAt(origin, () => {
-    circle(0, 0, math.randomInt(100));
-  });
-};
-
 const drawRingArcs = (
   start: number,
   stop: number,
@@ -39,21 +33,9 @@ const drawDust = (
     const x = (width + random(widthSpacing)) * cos(angularVelocity * i);
     const y = (height + random(heightSpacing)) * sin(angularVelocity * i);
     const distance = dist(0, 0, x, y);
-    const hue = map(
-      distance,
-      0,
-      windowHeight / 2 + windowWidth / 2,
-      410,
-      250
-    );
-    const alpha = map(
-      distance,
-      0,
-      windowHeight / 2 + windowWidth / 2,
-      100,
-      0
-    );
-    const saturation = widthSpacing === 0 ? 70 : 100; 
+    const hue = map(distance, 0, windowHeight / 2 + windowWidth / 2, 410, 250);
+    const alpha = map(distance, 0, windowHeight / 2 + windowWidth / 2, 100, 0);
+    const saturation = widthSpacing === 0 ? 70 : 100;
     const c = color(hue % 360, saturation, alpha, alpha);
     if (widthSpacing === 0) strokeWeight(3);
     stroke(c);
@@ -61,6 +43,45 @@ const drawDust = (
     point(x, y);
   }
 
+  pop();
+};
+
+const genDust = (
+  count: number,
+  width: number,
+  height: number,
+  angle: number,
+  spacing: number,
+  strokeSetter: () => void,
+  starBodyDrawer: () => void
+): void => {
+  push();
+  rotate(angle);
+
+  strokeWeight(1);
+  for (let i = 0; i < count; i++) {
+    drawDust(
+      0,
+      180,
+      width / 2,
+      height / 2,
+      spacing * i,
+      (spacing / 20) * i,
+      5000
+    );
+  }
+  starBodyDrawer();
+  for (let i = 0; i < count; i++) {
+    drawDust(
+      180,
+      360,
+      width / 2,
+      height / 2,
+      spacing * i,
+      (spacing / 10) * i,
+      5000
+    );
+  }
   pop();
 };
 
@@ -75,45 +96,39 @@ const genRing = (
 ): void => {
   push();
   rotate(angle);
-
-  strokeWeight(1);
   for (let i = 0; i < count; i++) {
-    // drawRingArcs(
-    //   0,
-    //   180,
-    //   width + (i + 1) * spacing,
-    //   height + ((i + 1) * spacing) / 2,
-    //   strokeSetter
-    // );
-    drawDust(0, 180, width / 2, height / 2, spacing * i, spacing / 20 * i, 5000);
+    drawRingArcs(
+      0,
+      180,
+      width + (i + 1) * spacing,
+      height + ((i + 1) * spacing) / 2,
+      strokeSetter
+    );
   }
   starBodyDrawer();
   for (let i = 0; i < count; i++) {
-    // drawRingArcs(
-    //   180,
-    //   360,
-    //   width + (i + 1) * spacing,
-    //   height + ((i + 1) * spacing) / 2,
-    //   strokeSetter
-    // );
-    drawDust(180, 360, width / 2, height / 2, spacing * i, spacing / 10 * i, 5000);
+    drawRingArcs(
+      180,
+      360,
+      width + (i + 1) * spacing,
+      height + ((i + 1) * spacing) / 2,
+      strokeSetter
+    );
   }
   pop();
 };
-
-const ringed = (origin: Vector2D, radius: number): void => {
+const drawDustedPlanet = (origin: Vector2D, radius: number): void => {
   drawAt(origin, () => {
     push();
     angleMode(DEGREES);
     const radius = random(50, 100);
-    genRing(
+    genDust(
       45,
       radius,
       20,
       random(130, 180),
       30,
       () => {
-        // stroke(0, 0, 100, 0);
         push();
         noStroke();
         noFill();
@@ -124,9 +139,38 @@ const ringed = (origin: Vector2D, radius: number): void => {
         fill(0, 0, 0);
         strokeWeight(3);
         stroke(50, 70, 100, 100);
-        // noStroke();
         circle(0, 0, radius);
         pop();
+      }
+    );
+    pop();
+  });
+};
+
+const drawRegularPlanet = (origin: Vector2D, radius: number, strokeSetter: () => void = (): void => {}): void => {
+  drawAt(origin, () => {
+    strokeSetter();
+    circle(0, 0, radius);
+  });
+};
+
+const drawRingedPlanet = (origin: Vector2D, radius: number, strokeSetter: () => void = (): void => {}): void => {
+  drawAt(origin, () => {
+    push();
+    angleMode(DEGREES);
+    const hue = random(360);
+    genRing(
+      random(3, 7),
+      random(radius * 2, radius * 2.5),
+      random(radius * 2),
+      random(360),
+      10,
+      strokeSetter
+      ,
+      () => {
+        fill(0, 0, 100);
+        strokeSetter();
+        circle(0, 0, radius);
       }
     );
     pop();

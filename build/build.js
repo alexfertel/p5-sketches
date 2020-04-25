@@ -49,6 +49,21 @@ var drawDisc = function (center, lineCount) {
         drawArc(center.x, center.y, radius, theta, alpha_1, length_1);
     }
 };
+var drawSineLine = function (origin, angle, length, weight, strokeSetter) {
+    if (strokeSetter === void 0) { strokeSetter = function () { }; }
+    push();
+    angleMode(DEGREES);
+    noFill();
+    translate(origin.x, origin.y);
+    rotate(angle);
+    beginShape();
+    strokeSetter();
+    for (var i = 0; i < length; i++) {
+        curveVertex(i, sin(i) * weight);
+    }
+    endShape();
+    pop();
+};
 function inRange(x, y, matrix) {
     return 0 <= x && x < matrix.length && 0 <= y && y < matrix[0].length;
 }
@@ -64,11 +79,6 @@ var drawAt = function (origin, func) {
     translate(origin.x, origin.y);
     func();
     pop();
-};
-var regular = function (origin, radius) {
-    drawAt(origin, function () {
-        circle(0, 0, math.randomInt(100));
-    });
 };
 var drawRingArcs = function (start, stop, width, height, strokeSetter) {
     noFill();
@@ -95,25 +105,37 @@ var drawDust = function (start, stop, width, height, widthSpacing, heightSpacing
     }
     pop();
 };
-var genRing = function (count, width, height, angle, spacing, strokeSetter, starBodyDrawer) {
+var genDust = function (count, width, height, angle, spacing, strokeSetter, starBodyDrawer) {
     push();
     rotate(angle);
     strokeWeight(1);
     for (var i = 0; i < count; i++) {
-        drawDust(0, 180, width / 2, height / 2, spacing * i, spacing / 20 * i, 5000);
+        drawDust(0, 180, width / 2, height / 2, spacing * i, (spacing / 20) * i, 5000);
     }
     starBodyDrawer();
     for (var i = 0; i < count; i++) {
-        drawDust(180, 360, width / 2, height / 2, spacing * i, spacing / 10 * i, 5000);
+        drawDust(180, 360, width / 2, height / 2, spacing * i, (spacing / 10) * i, 5000);
     }
     pop();
 };
-var ringed = function (origin, radius) {
+var genRing = function (count, width, height, angle, spacing, strokeSetter, starBodyDrawer) {
+    push();
+    rotate(angle);
+    for (var i = 0; i < count; i++) {
+        drawRingArcs(0, 180, width + (i + 1) * spacing, height + ((i + 1) * spacing) / 2, strokeSetter);
+    }
+    starBodyDrawer();
+    for (var i = 0; i < count; i++) {
+        drawRingArcs(180, 360, width + (i + 1) * spacing, height + ((i + 1) * spacing) / 2, strokeSetter);
+    }
+    pop();
+};
+var drawDustedPlanet = function (origin, radius) {
     drawAt(origin, function () {
         push();
         angleMode(DEGREES);
         var radius = random(50, 100);
-        genRing(45, radius, 20, random(130, 180), 30, function () {
+        genDust(45, radius, 20, random(130, 180), 30, function () {
             push();
             noStroke();
             noFill();
@@ -125,6 +147,27 @@ var ringed = function (origin, radius) {
             stroke(50, 70, 100, 100);
             circle(0, 0, radius);
             pop();
+        });
+        pop();
+    });
+};
+var drawRegularPlanet = function (origin, radius, strokeSetter) {
+    if (strokeSetter === void 0) { strokeSetter = function () { }; }
+    drawAt(origin, function () {
+        strokeSetter();
+        circle(0, 0, radius);
+    });
+};
+var drawRingedPlanet = function (origin, radius, strokeSetter) {
+    if (strokeSetter === void 0) { strokeSetter = function () { }; }
+    drawAt(origin, function () {
+        push();
+        angleMode(DEGREES);
+        var hue = random(360);
+        genRing(random(3, 7), random(radius * 2, radius * 2.5), random(radius * 2), random(360), 10, strokeSetter, function () {
+            fill(0, 0, 100);
+            strokeSetter();
+            circle(0, 0, radius);
         });
         pop();
     });
@@ -237,6 +280,66 @@ function generate() {
     cells = nextgen;
     generation++;
 }
+var BalloonSketch = (function () {
+    function BalloonSketch() {
+        var _this = this;
+        this.setup = function () {
+            createCanvas(windowWidth, windowHeight);
+            angleMode(DEGREES);
+            colorMode(HSB);
+            var c = color("#fdd998");
+            background(c);
+            var origin = new Vector2D(width / 2, height / 2 + 350);
+            strokeWeight(1);
+            _this.drawBalloonWires(origin);
+        };
+        this.draw = function () { };
+    }
+    BalloonSketch.prototype.drawBalloonWires = function (origin) {
+        for (var i = 0; i < 25; i++) {
+            var length_2 = random(450, 650);
+            var angle = 270 - random(-45, 45);
+            var weight = random(5, 25);
+            drawSineLine(origin, angle, length_2, weight, function () {
+                stroke(0, 0, 0, 0.1);
+            });
+            var newOrigin = new Vector2D(origin.x + (length_2 + 10) * cos(angle) + sin(length_2 + 10) * weight, origin.y + (length_2 + 10) * sin(angle));
+            var radius = random(50, 100);
+            var strokeSet = function () {
+                var hue = random(360);
+                stroke(hue, 80, 75, 100);
+            };
+            if (random() < 0.3)
+                drawRingedPlanet(newOrigin, radius, strokeSet);
+            else
+                drawRegularPlanet(newOrigin, radius, strokeSet);
+            this.drawDust(newOrigin, radius, 1000, strokeSet);
+        }
+    };
+    BalloonSketch.prototype.drawDust = function (origin, radius, density, strokeSetter) {
+        if (strokeSetter === void 0) { strokeSetter = function () { }; }
+        push();
+        translate(origin.x, origin.y);
+        strokeSetter();
+        var angularVelocity = 1;
+        var angle = 0;
+        for (var i = 0; i < density; i++) {
+            var x = random(radius) * cos(angle);
+            var y = random(radius) * sin(angle);
+            point(x, y);
+            angle += angularVelocity;
+        }
+        pop();
+    };
+    BalloonSketch.prototype.drawWire = function (origin, length, angle) {
+        push();
+        translate(origin.x, origin.y);
+        rotate(270 - angle);
+        line(0, 0, length, 0);
+        pop();
+    };
+    return BalloonSketch;
+}());
 var CliffordAttractorSketch = (function () {
     function CliffordAttractorSketch() {
     }
@@ -751,17 +854,7 @@ var StarSystemSketch = (function () {
     StarSystemSketch.prototype.draw = function () { };
     return StarSystemSketch;
 }());
-var setup = function () {
-    createCanvas(windowWidth, windowHeight);
-    background(0);
-    colorMode(HSB, 360, 100, 100, 100);
-    drawNoise(Vector2D.origin(), new Vector2D(width, height), 2, function () {
-        if (random() < 0.008)
-            stroke(255, map(random(), 0, 1, 0, 50));
-        else
-            stroke(255, 0);
-    });
-    ringed(Vector2D.center(), 200);
-};
-var draw = function () { };
+var factory = (function () { return new BalloonSketch(); })();
+var setup = function () { return factory.setup(); };
+var draw = function () { return factory.draw(); };
 //# sourceMappingURL=build.js.map
