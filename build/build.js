@@ -163,7 +163,6 @@ var drawRingedPlanet = function (origin, radius, strokeSetter) {
     drawAt(origin, function () {
         push();
         angleMode(DEGREES);
-        var hue = random(360);
         genRing(random(3, 7), random(radius * 2, radius * 2.5), random(radius * 2), random(360), 10, strokeSetter, function () {
             fill(0, 0, 100);
             strokeSetter();
@@ -287,7 +286,7 @@ var BalloonSketch = (function () {
             createCanvas(windowWidth, windowHeight);
             angleMode(DEGREES);
             colorMode(HSB);
-            var c = color("#fdd998");
+            var c = color("#04BBEF");
             background(c);
             var origin = new Vector2D(width / 2, height / 2 + 350);
             strokeWeight(1);
@@ -305,15 +304,13 @@ var BalloonSketch = (function () {
             });
             var newOrigin = new Vector2D(origin.x + (length_2 + 10) * cos(angle) + sin(length_2 + 10) * weight, origin.y + (length_2 + 10) * sin(angle));
             var radius = random(50, 100);
+            var hue_2 = random(360);
             var strokeSet = function () {
-                var hue = random(360);
-                stroke(hue, 80, 75, 100);
             };
             if (random() < 0.3)
                 drawRingedPlanet(newOrigin, radius, strokeSet);
             else
                 drawRegularPlanet(newOrigin, radius, strokeSet);
-            this.drawDust(newOrigin, radius, 1000, strokeSet);
         }
     };
     BalloonSketch.prototype.drawDust = function (origin, radius, density, strokeSetter) {
@@ -321,11 +318,11 @@ var BalloonSketch = (function () {
         push();
         translate(origin.x, origin.y);
         strokeSetter();
-        var angularVelocity = 1;
+        var angularVelocity = 360 / density;
         var angle = 0;
         for (var i = 0; i < density; i++) {
-            var x = random(radius) * cos(angle);
-            var y = random(radius) * sin(angle);
+            var x = math.random(radius) * cos(angle);
+            var y = math.random(radius) * sin(angle);
             point(x, y);
             angle += angularVelocity;
         }

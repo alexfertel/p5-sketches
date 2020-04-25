@@ -147,26 +147,32 @@ const drawDustedPlanet = (origin: Vector2D, radius: number): void => {
   });
 };
 
-const drawRegularPlanet = (origin: Vector2D, radius: number, strokeSetter: () => void = (): void => {}): void => {
+const drawRegularPlanet = (
+  origin: Vector2D,
+  radius: number,
+  strokeSetter: () => void = (): void => {}
+): void => {
   drawAt(origin, () => {
     strokeSetter();
     circle(0, 0, radius);
   });
 };
 
-const drawRingedPlanet = (origin: Vector2D, radius: number, strokeSetter: () => void = (): void => {}): void => {
+const drawRingedPlanet = (
+  origin: Vector2D,
+  radius: number,
+  strokeSetter: () => void = (): void => {}
+): void => {
   drawAt(origin, () => {
     push();
     angleMode(DEGREES);
-    const hue = random(360);
     genRing(
       random(3, 7),
       random(radius * 2, radius * 2.5),
       random(radius * 2),
       random(360),
       10,
-      strokeSetter
-      ,
+      strokeSetter,
       () => {
         fill(0, 0, 100);
         strokeSetter();

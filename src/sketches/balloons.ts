@@ -4,7 +4,7 @@ class BalloonSketch implements ISketch {
     angleMode(DEGREES);
     colorMode(HSB);
 
-    const c = color("#fdd998");
+    const c = color("#04BBEF");
     background(c);
 
     const origin = new Vector2D(width / 2, height / 2 + 350);
@@ -28,14 +28,14 @@ class BalloonSketch implements ISketch {
       );
 
       const radius = random(50, 100);
-      const strokeSet = ():void => {
-        const hue = random(360);
-        stroke(hue, 80, 75, 100);
+      const hue = random(360);
+      const strokeSet = (): void => {
+        // stroke(hue, random(80, 100), random(75, 85), 100);
       };
       if (random() < 0.3) drawRingedPlanet(newOrigin, radius, strokeSet);
       else drawRegularPlanet(newOrigin, radius, strokeSet);
 
-      this.drawDust(newOrigin, radius, 1000, strokeSet);
+      // this.drawDust(newOrigin, radius / 2, 1000, strokeSet);
     }
   }
 
@@ -48,11 +48,11 @@ class BalloonSketch implements ISketch {
     push();
     translate(origin.x, origin.y);
     strokeSetter();
-    const angularVelocity = 1;
-    const angle = 0;
+    const angularVelocity = 360 / density;
+    let angle = 0;
     for (let i = 0; i < density; i++) {
-      const x = random(radius) * cos(angle);
-      const y = random(radius) * sin(angle);
+      const x = math.random(radius) * cos(angle);
+      const y = math.random(radius) * sin(angle);
       point(x, y);
       angle += angularVelocity;
     }
