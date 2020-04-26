@@ -51,8 +51,8 @@ class BalloonSketch implements ISketch {
     const angularVelocity = 360 / density;
     let angle = 0;
     for (let i = 0; i < density; i++) {
-      const x = math.random(radius) * cos(angle);
-      const y = math.random(radius) * sin(angle);
+      const x = random(radius) * cos(angle);
+      const y = random(radius) * sin(angle);
       point(x, y);
       angle += angularVelocity;
     }

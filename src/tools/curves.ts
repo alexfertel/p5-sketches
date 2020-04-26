@@ -46,7 +46,7 @@ const drawArcWithCustomPen = (
   theta: number,
   alpha: number,
   length: number,
-  pen: ()=> void
+  pen: () => void
 ): void => {
   beginShape();
   while (length > 0) {
@@ -58,7 +58,6 @@ const drawArcWithCustomPen = (
   endShape();
 };
 
-
 const drawDisc = (center: Vector2D, lineCount: number): void => {
   for (let i = 0; i < lineCount; i++) {
     const theta = random(PI * 2);
@@ -68,3 +67,11 @@ const drawDisc = (center: Vector2D, lineCount: number): void => {
     drawArc(center.x, center.y, radius, theta, alpha, length);
   }
 };
+
+class Ellipse {
+  constructor(
+    public origin: Vector2D,
+    public width: number,
+    public height: number
+  ) {}
+}

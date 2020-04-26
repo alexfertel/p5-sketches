@@ -49,6 +49,30 @@ var drawDisc = function (center, lineCount) {
         drawArc(center.x, center.y, radius, theta, alpha_1, length_1);
     }
 };
+var Ellipse = (function () {
+    function Ellipse(origin, width, height) {
+        this.origin = origin;
+        this.width = width;
+        this.height = height;
+    }
+    return Ellipse;
+}());
+var chaikinsCurveSubdivision = function (points, steps) {
+    var subdivideOne = function (control1, control2) {
+        return [
+            control1.scale(3 / 4).add(control2.scale(1 / 4)),
+            control1.scale(1 / 4).add(control2.scale(3 / 4))
+        ];
+    };
+    if (steps < 0)
+        return points;
+    var result = [];
+    for (var i = 0; i < points.length - 1; i++) {
+        var subdivided = subdivideOne(points[i], points[i + 1]);
+        result = result.concat(subdivided);
+    }
+    return chaikinsCurveSubdivision(result, steps - 1);
+};
 var drawSineLine = function (origin, angle, length, weight, strokeSetter) {
     if (strokeSetter === void 0) { strokeSetter = function () { }; }
     push();
@@ -63,6 +87,13 @@ var drawSineLine = function (origin, angle, length, weight, strokeSetter) {
     }
     endShape();
     pop();
+};
+var drawPoints = function (points, strokeSetter) {
+    if (strokeSetter === void 0) { strokeSetter = function (i) { }; }
+    for (var i = 0; i < points.length - 1; i++) {
+        strokeSetter(i);
+        line(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y);
+    }
 };
 function inRange(x, y, matrix) {
     return 0 <= x && x < matrix.length && 0 <= y && y < matrix[0].length;
@@ -201,6 +232,12 @@ var frame = function (radius) {
     punchOut(img, punch);
     image(img, 0, 0);
 };
+var init = function () {
+    createCanvas(windowWidth, windowHeight);
+    background(255);
+    angleMode(DEGREES);
+    colorMode(HSB, 360, 100, 100, 100);
+};
 var drawSquare = function (point, side) {
     push();
     rectMode(CENTER);
@@ -321,8 +358,8 @@ var BalloonSketch = (function () {
         var angularVelocity = 360 / density;
         var angle = 0;
         for (var i = 0; i < density; i++) {
-            var x = math.random(radius) * cos(angle);
-            var y = math.random(radius) * sin(angle);
+            var x = random(radius) * cos(angle);
+            var y = random(radius) * sin(angle);
             point(x, y);
             angle += angularVelocity;
         }
@@ -336,6 +373,68 @@ var BalloonSketch = (function () {
         pop();
     };
     return BalloonSketch;
+}());
+var generateComet = function (ellipse, start, angle, angularVelocity, noise) {
+    var points = [];
+    var steps = angle / angularVelocity;
+    for (var i = 0; i < steps; i++) {
+        points.push(new Vector2D(ellipse.origin.x +
+            (ellipse.width / 2) * cos(start + angularVelocity * i) +
+            noise(steps - i), ellipse.origin.y +
+            (ellipse.height / 2) * sin(start + angularVelocity * i) +
+            noise(steps - i)));
+    }
+    return points;
+};
+var drawComet = function (comet) {
+    var sc = chroma.scale("OrRd");
+    drawPoints(comet, function (i) {
+        var offset = i / comet.length;
+        var representation = sc(offset)
+            .alpha(offset)
+            .hsl()
+            .map(function (value) { return value || 0; });
+        var c = color(representation[0], representation[1], representation[2], representation[3]);
+        stroke(c);
+    });
+};
+var ChaikinSketch = (function () {
+    function ChaikinSketch() {
+        this.setup = function () {
+            init();
+            noFill();
+            colorMode(HSL, 360, 1, 1, 1);
+            strokeWeight(2);
+            var origin = Vector2D.center();
+            var ellipseCount = 50;
+            var cometsPerEllipse = 6;
+            push();
+            translate(origin.x, origin.y);
+            rotate(-15);
+            var ellipses = [];
+            for (var i = ellipseCount; i > 0; i--) {
+                var width_1 = random(300, 600);
+                var height_1 = 200;
+                var center = Vector2D.origin().add(new Vector2D(0, random(-100, 100)));
+                var ellipse_1 = new Ellipse(center, width_1, height_1);
+                ellipses.push(ellipse_1);
+            }
+            for (var i = 0; i < ellipseCount; i++) {
+                var angle = random(30, 40);
+                var ellipse_2 = ellipses[i];
+                for (var i_1 = 0; i_1 < cometsPerEllipse; i_1++) {
+                    var comet = generateComet(ellipse_2, random(360), angle, 1, function (i) {
+                        return random(i * 0.1);
+                    });
+                    var chaikinComet = chaikinsCurveSubdivision(comet, 3);
+                    drawComet(chaikinComet);
+                }
+            }
+            pop();
+        };
+        this.draw = function () { };
+    }
+    return ChaikinSketch;
 }());
 var CliffordAttractorSketch = (function () {
     function CliffordAttractorSketch() {
@@ -475,6 +574,41 @@ var FlowFieldsSketch = (function () {
     };
     FlowFieldsSketch.prototype.draw = function () { };
     return FlowFieldsSketch;
+}());
+var branchAt = function (angle, length, step, minLength) {
+    if (length > minLength) {
+        push();
+        var stem = random(length / 2, length * 2);
+        line(0, 0, stem, 0);
+        translate(stem, 0);
+        rotate(random(angle));
+        branchAt(angle, length - step, step, minLength);
+        rotate(random(-angle * 2));
+        branchAt(angle, length - step, step, minLength);
+        pop();
+    }
+};
+var drawFlower = function () {
+};
+var drawTree = function (start) {
+    push();
+    translate(start.x, start.y);
+    rotate(270);
+    branchAt(25, 70, 7, 25);
+    pop();
+};
+var SimpleTreeSketch = (function () {
+    function SimpleTreeSketch() {
+        this.setup = function () {
+            init();
+            var origin = Vector2D.center();
+            strokeWeight(1);
+            var start = new Vector2D(origin.x, origin.y + 300);
+            drawTree(start);
+        };
+        this.draw = function () { };
+    }
+    return SimpleTreeSketch;
 }());
 var FunnySquare = (function () {
     function FunnySquare(topLeft, topRight, bottomRight, bottomLeft) {
@@ -851,7 +985,7 @@ var StarSystemSketch = (function () {
     StarSystemSketch.prototype.draw = function () { };
     return StarSystemSketch;
 }());
-var factory = (function () { return new BalloonSketch(); })();
+var factory = (function () { return new ChaikinSketch(); })();
 var setup = function () { return factory.setup(); };
 var draw = function () { return factory.draw(); };
 //# sourceMappingURL=build.js.map

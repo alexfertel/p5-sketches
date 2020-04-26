@@ -18,3 +18,13 @@ const drawSineLine = (
   endShape();
   pop();
 };
+
+const drawPoints = (
+  points: Vector2D[],
+  strokeSetter: (i: number) => void = (i): void => {}
+): void => {
+  for (let i = 0; i < points.length - 1; i++) {
+    strokeSetter(i);
+    line(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y);
+  }
+};
