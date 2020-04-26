@@ -578,6 +578,8 @@ var FlowFieldsSketch = (function () {
 var branchAt = function (angle, length, step, minLength) {
     if (length > minLength) {
         push();
+        strokeWeight(6);
+        stroke(color('#42240c'));
         var stem = random(length / 2, length * 2);
         line(0, 0, stem, 0);
         translate(stem, 0);
@@ -587,28 +589,30 @@ var branchAt = function (angle, length, step, minLength) {
         branchAt(angle, length - step, step, minLength);
         pop();
     }
-};
-var drawFlower = function () {
+    else {
+        strokeWeight(1);
+        stroke(color('#3A5F0B'));
+        drawSpiral(0, 0, 35, 1, 13);
+    }
 };
 var drawTree = function (start) {
     push();
     translate(start.x, start.y);
     rotate(270);
-    branchAt(25, 70, 7, 25);
+    branchAt(35, 80, 7, 30);
     pop();
 };
-var SimpleTreeSketch = (function () {
-    function SimpleTreeSketch() {
+var FlowerSketch = (function () {
+    function FlowerSketch() {
         this.setup = function () {
             init();
             var origin = Vector2D.center();
-            strokeWeight(1);
             var start = new Vector2D(origin.x, origin.y + 300);
             drawTree(start);
         };
         this.draw = function () { };
     }
-    return SimpleTreeSketch;
+    return FlowerSketch;
 }());
 var FunnySquare = (function () {
     function FunnySquare(topLeft, topRight, bottomRight, bottomLeft) {
@@ -985,7 +989,7 @@ var StarSystemSketch = (function () {
     StarSystemSketch.prototype.draw = function () { };
     return StarSystemSketch;
 }());
-var factory = (function () { return new ChaikinSketch(); })();
+var factory = (function () { return new FlowerSketch(); })();
 var setup = function () { return factory.setup(); };
 var draw = function () { return factory.draw(); };
 //# sourceMappingURL=build.js.map
