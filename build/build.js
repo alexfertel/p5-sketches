@@ -1,3 +1,72 @@
+var OrRd = "OrRd";
+var PuBu = "PuBu";
+var BuPu = "BuPu";
+var Oranges = "Oranges";
+var BuGn = "BuGn";
+var YlOrBr = "YlOrBr";
+var YlGn = "YlGn";
+var Reds = "Reds";
+var RdPu = "RdPu";
+var Greens = "Greens";
+var YlGnBu = "YlGnBu";
+var Purples = "Purples";
+var GnBu = "GnBu";
+var Greys = "Greys";
+var YlOrRd = "YlOrRd";
+var PuRd = "PuRd";
+var Blues = "Blues";
+var PuBuGn = "PuBuGn";
+var Viridis = "Viridis";
+var sequential = [
+    OrRd,
+    PuBu,
+    BuPu,
+    Oranges,
+    BuGn,
+    YlOrBr,
+    YlGn,
+    Reds,
+    RdPu,
+    Greens,
+    YlGnBu,
+    Purples,
+    GnBu,
+    Greys,
+    YlOrRd,
+    PuRd,
+    Blues,
+    PuBuGn,
+    Viridis
+];
+var Spectral = "Spectral";
+var RdYlGn = "RdYlGn";
+var RdBu = "RdBu";
+var PiYG = "PiYG";
+var PRGn = "PRGn";
+var RdYlBu = "RdYlBu";
+var BrBG = "BrBG";
+var RdGy = "RdGy";
+var PuOr = "PuOr";
+var diverging = [
+    Spectral,
+    RdYlGn,
+    RdBu,
+    PiYG,
+    PRGn,
+    RdYlBu,
+    BrBG,
+    RdGy,
+    PuOr
+];
+var Set2 = "Set2";
+var Accent = "Accent";
+var Set1 = "Set1";
+var Set3 = "Set3";
+var Dark2 = "Dark2";
+var Paired = "Paired";
+var Pastel2 = "Pastel2";
+var Pastel1 = "Pastel1";
+var qualitative = [Set2, Accent, Set1, Set3, Dark2, Paired, Pastel2, Pastel1];
 var polarToCartesian = function (polarPoint) {
     return new Vector2D(polarPoint.r * cos(polarPoint.angle), polarPoint.r * sin(polarPoint.angle));
 };
@@ -488,6 +557,69 @@ var CliffordAttractorSketch = (function () {
         return atan2(y1 - y, x1 - x);
     };
     return CliffordAttractorSketch;
+}());
+var CometFieldSketch = (function () {
+    function CometFieldSketch() {
+        this.lineSize = 50;
+        this.stepSize = 5;
+        this.sinks = [];
+    }
+    CometFieldSketch.prototype.setup = function () {
+        createCanvas(windowWidth, windowHeight);
+        colorMode(HSB, 360, 1, 1, 1);
+        noFill();
+        this.render(10000);
+    };
+    CometFieldSketch.prototype.render = function (pointCount) {
+        var sc = chroma.scale(Blues).classes(3);
+        var _loop_1 = function () {
+            var p = new Vector2D(random(-150, width + 150), random(-150, height + 150));
+            var points = this_1.generateLine(p);
+            drawPoints(points, function (i) {
+                var offset = points[0].y / height;
+                strokeWeight(map(i, 0, points.length, 1, 3));
+                var representation = sc(offset)
+                    .hsl()
+                    .map(function (value) { return value || 0; });
+                var c = color(representation[0], representation[1], representation[2], representation[3]);
+                stroke(c);
+            });
+            pointCount--;
+        };
+        var this_1 = this;
+        while (pointCount > 0) {
+            _loop_1();
+        }
+    };
+    CometFieldSketch.prototype.generateLine = function (point) {
+        var stepCount = this.lineSize / this.stepSize;
+        var points = [Vector2D.fromVector(point)];
+        while (stepCount > 0) {
+            var value = this.getValue(point);
+            var xStep = this.stepSize * cos(value);
+            var yStep = this.stepSize * sin(value);
+            point.x += xStep;
+            point.y += yStep;
+            points.push(Vector2D.fromVector(point));
+            stepCount--;
+        }
+        return points;
+    };
+    CometFieldSketch.prototype.getValue = function (point) {
+        for (var i = 0; i < this.sinks.length; i++) {
+            if (insideCircleBounds(point, this.sinks[i])) {
+                var polar = cartesianToPolar(point.sub(this.sinks[i].center));
+                return polar.angle - PI / 2;
+            }
+        }
+        var scaledX = point.x * 0.001;
+        var scaledY = point.y * 0.001;
+        var noiseValue = noise(scaledX, scaledY);
+        var angle = map(noiseValue, 0.0, 1.0, 0.0, TWO_PI);
+        return angle;
+    };
+    CometFieldSketch.prototype.draw = function () { };
+    return CometFieldSketch;
 }());
 var FlowFieldsSketch = (function () {
     function FlowFieldsSketch() {
@@ -989,7 +1121,7 @@ var StarSystemSketch = (function () {
     StarSystemSketch.prototype.draw = function () { };
     return StarSystemSketch;
 }());
-var factory = (function () { return new FlowerSketch(); })();
+var factory = (function () { return new CometFieldSketch(); })();
 var setup = function () { return factory.setup(); };
 var draw = function () { return factory.draw(); };
 //# sourceMappingURL=build.js.map
