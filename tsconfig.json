@@ -11,10 +11,6 @@
     "allowJs": true
   },
   "include": [
-    "src/global.d.ts",
-    "src/tools/**/*",
-    "src/interfaces/**/*",
-    "src/sketches/**/*",
-    "src/index.ts"
+    "src"
   ]
 }

@@ -3,7 +3,7 @@ interface Circle {
   radius: number;
 }
 
-class SinksSketch implements ISketch, ICanvasMapper {
+class SinksSketch implements ISketch, ICanvasMapper<number> {
   public lineSize = 100;
   public stepSize = 50;
   public sinks: Circle[] = [];

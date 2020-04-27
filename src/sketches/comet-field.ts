@@ -1,4 +1,4 @@
-class CometFieldSketch implements ISketch, ICanvasMapper {
+class CometFieldSketch implements ISketch, ICanvasMapper<number> {
   public lineSize = 50;
   public stepSize = 5;
   public sinks: Circle[] = [];

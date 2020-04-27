@@ -1,4 +1,4 @@
-class Vector2D {
+class Vector2D implements IVector2D {
   constructor(public x: number, public y: number) {}
 
   add(another: Vector2D): Vector2D {
@@ -13,20 +13,9 @@ class Vector2D {
     return new Vector2D(this.x * factor, this.y * factor);
   }
 
-  static fromVector = (vector: Vector2D): Vector2D => new Vector2D(vector.x, vector.y);
+  static fromVector = (vector: Vector2D): Vector2D =>
+    new Vector2D(vector.x, vector.y);
   static origin = (): Vector2D => new Vector2D(0, 0);
   static center = (): Vector2D => new Vector2D(width / 2, height / 2);
   static end = (): Vector2D => new Vector2D(width, height);
 }
-
-class PolarPoint {
-  constructor(public r: number, public angle: number) {}
-}
-
-interface MovingPoint {
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-}
-

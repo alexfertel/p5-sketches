@@ -1,3 +1,3 @@
-interface ICanvasMapper {
-    getValue: (point: Vector2D) => number
+interface ICanvasMapper<T> {
+    getValue: (point: Vector2D) => T
 }

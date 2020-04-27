@@ -1,5 +1,5 @@
-class CliffordAttractorSketch implements ISketch, ICanvasMapper {
-  public points: MovingPoint[];
+class CliffordAttractorSketch implements ISketch, ICanvasMapper<number> {
+  public points: IMovingPoint[];
   private _a: number;
   private _b: number;
   private _c: number;
@@ -16,7 +16,7 @@ class CliffordAttractorSketch implements ISketch, ICanvasMapper {
         y: y,
         vx: 0,
         vy: 0
-      } as MovingPoint);
+      } as IMovingPoint);
     }
     this._a = random() * 4 - 2;
     this._b = random() * 4 - 2;
