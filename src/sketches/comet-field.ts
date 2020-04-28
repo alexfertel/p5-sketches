@@ -9,7 +9,7 @@ class CometFieldSketch implements ISketch, ICanvasMapper<number> {
     noFill();
     // background(0);
 
-    this.render(10000);
+    this.render(100);
   }
 
   render(pointCount: number): void {
@@ -35,10 +35,10 @@ class CometFieldSketch implements ISketch, ICanvasMapper<number> {
         //     4) /
         //   4;
         const offset = points[0].y / height;
-        strokeWeight(map(i, 0, points.length, 1, 3));
-        // const alphaOffset = i / points.length;
+        // strokeWeight(map(i, 0, points.length, 1, 3));
+        const alphaOffset = i / points.length;
         const representation = sc(offset)
-        //   .alpha(alphaOffset)
+          .alpha(alphaOffset)
           .hsl()
           .map(value => value || 0);
 

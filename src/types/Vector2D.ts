@@ -13,6 +13,9 @@ class Vector2D implements IVector2D {
     return new Vector2D(this.x * factor, this.y * factor);
   }
 
+  getNorm = (): number => sqrt(this.x * this.x + this.y * this.y);
+  
+
   static fromVector = (vector: Vector2D): Vector2D =>
     new Vector2D(vector.x, vector.y);
   static origin = (): Vector2D => new Vector2D(0, 0);
