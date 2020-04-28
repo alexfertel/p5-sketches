@@ -39,8 +39,6 @@ const drawPoints = (
 ): void => {
   for (let i = 0; i < points.length - 1; i++) {
     strokeSetter(i);
-
-    // drawLine(points[i], points[i + 1]);
     line(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y);
   }
 };
