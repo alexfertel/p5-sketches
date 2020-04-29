@@ -14,11 +14,13 @@ class Vector2D implements IVector2D {
   }
 
   getNorm = (): number => sqrt(this.x * this.x + this.y * this.y);
-  
 
   static fromVector = (vector: Vector2D): Vector2D =>
     new Vector2D(vector.x, vector.y);
+  static random = (): Vector2D => new Vector2D(random(width), random(height));
   static origin = (): Vector2D => new Vector2D(0, 0);
   static center = (): Vector2D => new Vector2D(width / 2, height / 2);
   static end = (): Vector2D => new Vector2D(width, height);
 }
+
+type Point = Vector2D;
