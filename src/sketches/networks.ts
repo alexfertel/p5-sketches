@@ -1,5 +1,3 @@
-type Edge = [IPoint, IPoint];
-
 class NetworkSketch implements ISketch {
   setup(): void {
     init();
