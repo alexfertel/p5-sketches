@@ -1,16 +1,3 @@
-interface Line {
-  start: Vector2D;
-  end: Vector2D;
-}
-
-interface Arc {
-  center: Vector2D;
-  width: number;
-  height: number;
-  start: number;
-  stop: number;
-}
-
 type Orbit = "line" | "arc";
 
 class StarSystemSketch implements ISketch {
