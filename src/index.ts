@@ -1,10 +1,10 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const factory = ((): SimpleCometSketch => new SimpleCometSketch())();
+const factory: ISketch = ((): RotatingNetworkSketch => new RotatingNetworkSketch())();
 
 const setup = (): void => factory.setup();
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const draw = (): void => factory.draw();
+const draw = (): void => factory.draw?.();
 
 // const setup = (): void => {
 //   createCanvas(windowWidth, windowHeight);
