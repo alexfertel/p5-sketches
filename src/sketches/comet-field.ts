@@ -22,7 +22,7 @@ class CometFieldSketch implements ISketch, ICanvasMapper<number> {
       );
 
       const points = this.generateLine(p);
-      drawPoints(points, (i): void => {
+      drawPolygon(points, (i): void => {
         // const offset = i / points.length;
         // const offset =
         //   (map(

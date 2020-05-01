@@ -25,7 +25,7 @@ class NetworkSketch implements ISketch {
       paths.push(chaikinsCurveSubdivision(iethPath, 3));
 
       strokeWeight(random(1, 5));
-      drawPoints(paths[i], brewerStokeSetter(paths[i], chroma.scale(Blues)));
+      drawPolygon(paths[i], brewerStokeSetter(paths[i], chroma.scale(Blues)));
     }
   }
   draw(): void {}
@@ -58,7 +58,7 @@ class RotatingNetworkSketch implements ISketch {
       );
       const chaikinTentacle = chaikinsCurveSubdivision(tentacle, 2);
 
-      drawPoints(
+      drawPolygon(
         chaikinTentacle,
         brewerStokeSetter(chaikinTentacle, chroma.scale(Blues).padding([0.3, 0]))
       );

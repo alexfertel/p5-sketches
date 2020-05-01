@@ -26,7 +26,7 @@ const generateComet = (
 const drawComet = (comet: Vector2D[]): void => {
   const sc = chroma.scale("OrRd");
 
-  drawPoints(comet, i => {
+  drawPolygon(comet, i => {
     const offset = i / comet.length;
 
     const representation = sc(offset)
