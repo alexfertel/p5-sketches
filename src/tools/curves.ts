@@ -42,32 +42,17 @@ const drawArc = (
   pop();
 };
 
-const drawArcWithCustomPen = (
-  x: number,
-  y: number,
-  r: number,
-  theta: number,
-  alpha: number,
-  length: number,
-  pen: () => void
+const drawDisc = (
+  center: Vector2D,
+  lineCount: number,
+  strokeSetter: (i: number) => void = (): void => {}
 ): void => {
-  beginShape();
-  while (length > 0) {
-    const point = polarToCartesian(new PolarPoint(r, theta));
-    pen();
-    theta += alpha;
-    length--;
-  }
-  endShape();
-};
-
-const drawDisc = (center: Vector2D, lineCount: number): void => {
   for (let i = 0; i < lineCount; i++) {
-    const theta = random(PI * 2);
-    const alpha = 0.01;
+    const theta = random(360);
     const radius = random(lineCount * 2);
-    const length = random(degrees(PI * 2));
-    drawArc(center.x, center.y, radius, theta, alpha, length);
+    const alpha = map(radius, 0, lineCount * 2, 1, .1);
+    const length = random(360);
+    drawArc(center.x, center.y, radius, theta, alpha, length, strokeSetter);
   }
 };
 

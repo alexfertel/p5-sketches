@@ -5,23 +5,13 @@ class Trigonometry implements ISketch {
     const origin = Vector2D.center();
     translate(origin.x, origin.y);
 
-    noFill();
-    const circleCount = 6;
-    const minRadius = 100;
-    for (let i = 0; i < circleCount; i++) {
-        const radius = (minRadius + i * 25) * 2
-        circle(0, 0, radius);
-    
-        push()
-        strokeWeight(4);
-        // const sc = chroma.scale([chroma("white"), "black"]).domain([0, 360]).padding([random(0, 1),0]);
-        drawArc(0, 0, radius / 2, random(360), 0.3, 50 + 25 * i, j => {
-        //   stroke(sc(j).hex());
-        })  
-        pop()
-    
-    }
-
+    strokeWeight(2);
+    const sc = chroma
+      .scale([chroma("white"), "black"])
+      .domain([0, 360])
+    drawDisc(Vector2D.origin(), 150, j => {
+      stroke(sc(j).hex());
+    });
   };
 
   drawBlind = (
