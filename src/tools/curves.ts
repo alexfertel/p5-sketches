@@ -27,16 +27,19 @@ const drawArc = (
   r: number,
   theta: number,
   alpha: number,
-  length: number
+  length: number,
+  strokeSetter: (i: number) => void = (): void => {}
 ): void => {
-  beginShape();
-  while (length > 0) {
-    const point = polarToCartesian(new PolarPoint(r, theta));
-    curveVertex(x + point.x, y + point.y);
-    theta += alpha;
-    length--;
+  push();
+  translate(x, y);
+  rotate(theta);
+  for (let i = 0; i < length; i += alpha) {
+    strokeSetter(i);
+    const rx = r * cos(i);
+    const ry = r * sin(i);
+    line(rx, ry, rx + alpha, ry);
   }
-  endShape();
+  pop();
 };
 
 const drawArcWithCustomPen = (

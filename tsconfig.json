@@ -16,6 +16,7 @@
     "src/interfaces/**/*",
     "src/types/**/*",
     "src/tools/**/*",
+    "src/studies/**/*",
     "src/sketches/**/*",
     "src/index.ts"
   ]

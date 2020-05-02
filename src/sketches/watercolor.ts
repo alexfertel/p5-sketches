@@ -6,7 +6,6 @@ class WatercolorSketch implements ISketch {
 
     translate(origin.x, origin.y);
 
-    // Hexagon
     const sides = 10
     const angle = 360 / sides;
     const radius = 200;
