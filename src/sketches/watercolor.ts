@@ -1,7 +1,7 @@
 class WatercolorSketch implements ISketch {
   setup = (): void => {
     init();
-    randomSeed(7);
+    // randomSeed(7);
     const origin = Vector2D.center();
 
     translate(origin.x, origin.y);
@@ -19,15 +19,24 @@ class WatercolorSketch implements ISketch {
       points.push(point);
     }
 
-    noStroke();
-    // const c = chroma('red')
-    const c = chroma('red').alpha(0.2)
-    fill(c.hex());
 
-    const startingPoints = uneasePolygon(points, 6);
-    
     noStroke();
-    drawVertices(startingPoints, true);
-    // drawWaterColor(startingPoints, 7);
+    // drawVertices(startingPoints, true);
+    for(let i = 0; i < 200; i++) {
+      translate(200, 0);
+      const c1 = chroma('blue').alpha(0.01)
+      fill(c1.hex());
+      drawWaterColor(points, 1, points.map(() => random(0.5, 1)));
+      translate(-400, 0);
+      const c2 = chroma('yellow').alpha(0.01)
+      fill(c2.hex());
+      drawWaterColor(points, 1, points.map(() => random(0.5, 1)));
+      translate(200, 0);
+      const c = chroma('red').alpha(0.01)
+      fill(c.hex());
+      drawWaterColor(points, 1, points.map(() => random(0.5, 1)));
+    }
+
+
   };
 }
