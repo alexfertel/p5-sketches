@@ -1,16 +1,17 @@
 class WatercolorSketch implements ISketch {
   setup = (): void => {
     init();
-    randomSeed(6);
+    randomSeed(7);
     const origin = Vector2D.center();
 
     translate(origin.x, origin.y);
 
     // Hexagon
-    const angle = 45;
-    const radius = 300;
+    const sides = 10
+    const angle = 360 / sides;
+    const radius = 200;
     const points = [];
-    for (let i = 0; i <= 360 / angle; i++) {
+    for (let i = 0; i <= sides; i++) {
       const x = radius * cos(angle * i);
       const y = radius * sin(angle * i);
       const point = createVector(x, y);
@@ -18,19 +19,15 @@ class WatercolorSketch implements ISketch {
       points.push(point);
     }
 
-    drawPolygon(points);
-
-    const newPoints = uneasePolygon(points, 6);
-
-
     noStroke();
-    fill("red");
-    strokeWeight(5);
-    // drawPolygon(newPoints, () => {}, true);
-    drawVertices(newPoints, true);
-    stroke("blue");
-    strokeWeight(10);
+    // const c = chroma('red')
+    const c = chroma('red').alpha(0.2)
+    fill(c.hex());
 
-    drawPoints(newPoints);
+    const startingPoints = uneasePolygon(points, 6);
+    
+    noStroke();
+    drawVertices(startingPoints, true);
+    // drawWaterColor(startingPoints, 7);
   };
 }

@@ -39,7 +39,7 @@ const drawPolygon = (
   close = false
 ): void => {
   const points = [...vectors];
-  if(close) {
+  if (close) {
     points.push(points[0]);
   }
   for (let i = 0; i < points.length - 1; i++) {
@@ -48,17 +48,13 @@ const drawPolygon = (
   }
 };
 
-const drawVertices = (
-  vectors: p5.Vector[],
-  close = false
-): void => {
+const drawVertices = (vectors: p5.Vector[], close = false): void => {
   beginShape();
-  for (let i = 0; i < vectors.length - 1; i++) {
-    vertex(vectors[i].x, vectors[i].y)
+  for (let i = 0; i < vectors.length; i++) {
+    vertex(vectors[i].x, vectors[i].y);
   }
   endShape(close ? CLOSE : null);
 };
-
 
 const drawPoints = (
   points: Vector2D[] | p5.Vector[],
@@ -70,8 +66,6 @@ const drawPoints = (
   }
 };
 
-
-
 // Two-point form
 // y - y1 = ((y2 - y1) / (x2 - x1)) * (x - x1)
 const getLineEquation = (
@@ -80,25 +74,27 @@ const getLineEquation = (
 ): ((x: number) => number) => (x: number): number =>
   ((p2.y - p1.y) / (p2.x - p1.x)) * (x - p1.x) + p1.y;
 
-const uneaseLine = (p1: p5.Vector, p2: p5.Vector, maxLength = 40): p5.Vector => {
-  // const middle = (p2.x + p1.x) / 2;
-  const x = random(
-    p1.x,
-    p2.x
-  );
-  const length = random(maxLength);
-  const equation = getLineEquation(p1, p2);
-  const y = equation(x);
-  const angle = p1.heading() + p1.angleBetween(p2) / 2;
+const uneaseLine = (
+  p1: p5.Vector,
+  p2: p5.Vector,
+  maxLength = 50
+): p5.Vector => {
+  const x = (p1.x + p2.x) / 2;
+  const y = (p1.y + p2.y) / 2;
+  const angle = p1.heading() + p1.angleBetween(p2) / 2 + randomGaussian(0, 1) * 90;
   const linePoint = createVector(x, y);
+  const scale = dist(p1.x, p1.y, p2.x, p2.y) / 4;
+
+  const length = randomGaussian(0, 1) * scale;
   const newPoint = createVector(length, 0);
+
 
   newPoint.rotate(angle);
   newPoint.add(linePoint);
   return newPoint;
 };
 
-const uneasePolygon = (points: p5.Vector[], times: number): p5.Vector[] => {
+const uneasePolygon = (points: p5.Vector[], times = 1): p5.Vector[] => {
   if (times < 1) return points;
 
   const newPoints: p5.Vector[] = [];
@@ -111,4 +107,12 @@ const uneasePolygon = (points: p5.Vector[], times: number): p5.Vector[] => {
   }
 
   return uneasePolygon(newPoints, times - 1);
+};
+
+const drawWaterColor = (startingPoints: p5.Vector[], times = 3): void => {
+  if (times > 1) {
+    const points = uneasePolygon(startingPoints);
+    drawVertices(points, true);
+    drawWaterColor(points, times - 1);
+  }
 };
