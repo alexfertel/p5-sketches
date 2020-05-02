@@ -1,18 +1,27 @@
 class Trigonometry implements ISketch {
   setup = (): void => {
     init();
-    background(0);
+    background(255);
     const origin = Vector2D.center();
     translate(origin.x, origin.y);
 
     noFill();
-    for (let i = 1; i < 200; i += random(3, 4)) {
-      strokeWeight(random(1, 2));
-      const sc = chroma.scale([chroma("white"), "black"]).domain([0, 360]).padding([random(0, 1),0]);
-      drawArc(0, 0, i, random(-3, 5), 0.3, 350, j => {
-        stroke(sc(j).hex());
-      });
+    const circleCount = 6;
+    const minRadius = 100;
+    for (let i = 0; i < circleCount; i++) {
+        const radius = (minRadius + i * 25) * 2
+        circle(0, 0, radius);
+    
+        push()
+        strokeWeight(4);
+        // const sc = chroma.scale([chroma("white"), "black"]).domain([0, 360]).padding([random(0, 1),0]);
+        drawArc(0, 0, radius / 2, random(360), 0.3, 50 + 25 * i, j => {
+        //   stroke(sc(j).hex());
+        })  
+        pop()
+    
     }
+
   };
 
   drawBlind = (
