@@ -4,35 +4,40 @@ const insideCircleBounds = (point: Vector2D, circle: Circle): boolean =>
 const drawSpiral = (
   x: number,
   y: number,
-  radius: number,
-  velocity: number,
+  startAngle: number,
+  startRadius: number,
+  length: number,
   angularVelocity: number,
-  r = 0,
-  angle = 0
+  strokeSetter: (i: number) => void = (): void => {}
 ): void => {
-  const av = map(angularVelocity, 0, 1, 0, PI * 2);
-  beginShape();
-  while (r < radius) {
-    const point = polarToCartesian(new PolarPoint(r, angle));
-    curveVertex(x + point.x, y + point.y);
-    angle += av;
-    r += velocity;
+  push();
+  translate(x, y);
+  rotate(startAngle);
+  translate(startRadius, 0)
+  const velocity = length / 360;
+  let radius = 0;  
+  for (let i = 0; i < 360; i++) {
+    strokeSetter(i);
+    const rx = radius * cos(angularVelocity * i);
+    const ry = radius * sin(angularVelocity * i);
+    line(rx, ry, rx + velocity, ry + velocity);
+    radius += velocity;
   }
-  endShape();
+  pop();
 };
 
 const drawArc = (
   x: number,
   y: number,
   r: number,
-  theta: number,
+  startAngle: number,
   alpha: number,
   length: number,
   strokeSetter: (i: number) => void = (): void => {}
 ): void => {
   push();
   translate(x, y);
-  rotate(theta);
+  rotate(startAngle);
   for (let i = 0; i < length; i += alpha) {
     strokeSetter(i);
     const rx = r * cos(i);
@@ -48,11 +53,11 @@ const drawDisc = (
   strokeSetter: (i: number) => void = (): void => {}
 ): void => {
   for (let i = 0; i < lineCount; i++) {
-    const theta = random(360);
+    const startAngle = random(360);
     const radius = random(lineCount * 2);
-    const alpha = map(radius, 0, lineCount * 2, 1, .1);
+    const alpha = map(radius, 0, lineCount * 2, 1, 0.1);
     const length = random(360);
-    drawArc(center.x, center.y, radius, theta, alpha, length, strokeSetter);
+    drawArc(center.x, center.y, radius, startAngle, alpha, length, strokeSetter);
   }
 };
 

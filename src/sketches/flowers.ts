@@ -22,7 +22,7 @@ const branchAt = (
   else {
     strokeWeight(1);
     stroke(color('#3A5F0B'));
-    drawSpiral(0, 0, 35, 1, 13);
+    // drawSpiral(0, 0, 35, 1, 13);
   }
 };
 
