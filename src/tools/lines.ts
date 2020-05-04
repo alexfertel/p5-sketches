@@ -126,9 +126,14 @@ const drawWaterColor = (
   layerCount: number,
   weights: number[] = undefined
 ): void => {
+  push()
+  noStroke();
+
   const startingPoints = uneasePolygon(basePolygon, 3, weights);
   for (let i = 0; i < layerCount; i++) {
     const points = uneasePolygon(startingPoints, 3, weights);
     drawVertices(points, true);
   }
+
+  pop()
 };
