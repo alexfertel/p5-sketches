@@ -13,9 +13,9 @@ const drawSpiral = (
   push();
   translate(x, y);
   rotate(startAngle);
-  translate(startRadius, 0)
+  translate(startRadius, 0);
   const velocity = length / 360;
-  let radius = 0;  
+  let radius = 0;
   for (let i = 0; i < 360; i++) {
     strokeSetter(i);
     const rx = radius * cos(angularVelocity * i);
@@ -23,6 +23,30 @@ const drawSpiral = (
     line(rx, ry, rx + velocity, ry + velocity);
     radius += velocity;
   }
+  pop();
+};
+
+const drawArcWithShape = (
+  x: number,
+  y: number,
+  r: number,
+  startAngle: number,
+  length: number,
+  strokeSetter: (i: number) => void = (): void => {}
+): void => {
+  push();
+  translate(x, y);
+  rotate(startAngle);
+  strokeSetter(0);
+  beginShape();
+  curveVertex(r * cos(0), r * sin(1));
+  for (let i = 0; i <= length; i++) {
+    const rx = r * cos(i);
+    const ry = r * sin(i);
+    curveVertex(rx, ry);
+  }
+  curveVertex(r * cos(length), r * sin(length));
+  endShape();
   pop();
 };
 
@@ -57,7 +81,15 @@ const drawDisc = (
     const radius = random(lineCount * 2);
     const alpha = map(radius, 0, lineCount * 2, 1, 0.1);
     const length = random(360);
-    drawArc(center.x, center.y, radius, startAngle, alpha, length, strokeSetter);
+    drawArc(
+      center.x,
+      center.y,
+      radius,
+      startAngle,
+      alpha,
+      length,
+      strokeSetter
+    );
   }
 };
 

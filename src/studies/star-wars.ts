@@ -1,9 +1,109 @@
 class StarWarsSketch implements ISketch {
   setup = (): void => {
     init();
-    background(0);
+
+    const bgColor = "#1b262c";
+    background(bgColor);
 
     const origin = Vector2D.center();
+    // translate(origin.x, origin.y);
+
+    const gray = chroma("dbdbdb")
+      .alpha(1)
+      .hex();
+
+    noFill();
+    strokeWeight(2);
+    stroke(gray);
+    for (let i = 1; i < 200; i += 6) {
+      drawArcWithShape(origin.x, origin.y, i, 90, 180);
+    }
+
+    push();
+    translate(origin.x, origin.y - 200);
+    for (let i = 1; i < 200; i += 6) {
+      stroke(
+        chroma("dbdbdb")
+          .alpha(0.5)
+          .hex()
+      );
+      line(0, i, random(40, 100 + i), i);
+      stroke(chroma("dbdbdb").hex());
+      line(0, i, random(40, 100 + i), i);
+    }
+
+    translate(0, 200);
+    for (let i = 1; i < 200; i += 6) {
+      stroke(
+        chroma("dbdbdb")
+          .alpha(0.5)
+          .hex()
+      );
+      line(0, i, random(40, 100 + (200 - i)), i);
+      stroke(chroma("dbdbdb").hex());
+      line(0, i, random(40, 100 + (200 - i)), i);
+    }
+
+    pop();
+
+    strokeCap(SQUARE);
+    strokeWeight(8);
+    stroke(bgColor);
+    line(167, height / 2, width - 150, height / 2);
+
+    strokeWeight(2);
+    stroke(gray);
+    line(167, height / 2 - 4, width - 150, height / 2 - 4);
+
+    strokeWeight(2);
+    stroke(gray);
+    line(167, height / 2 + 4, width - 150, height / 2 + 2);
+
+    translate(origin.x, origin.y);
+    translate(25, -80);
+    fill(bgColor);
+
+    beginShape();
+    const r = 45;
+    for (let i = 0; i < 360; i++) {
+      const rx = r * cos(i);
+      const ry = r * sin(i);
+      vertex(rx, ry);
+    }
+
+    beginContour();
+    for (let i = 359; i >= 0; i--) {
+      const rx = (r - 10) * cos(i);
+      const ry = (r - 10) * sin(i);
+      vertex(rx, ry);
+    }
+    endContour();
+    endShape(CLOSE);
+
+    fill(chroma(bgColor).alpha(0.5).hex());
+    beginShape();
+    for (let i = 0; i < 360; i++) {
+      const rx = (r - 10) * cos(i);
+      const ry = (r - 10) * sin(i);
+      vertex(rx, ry);
+    }
+    endShape(CLOSE);
+    
+    fill(bgColor);
+    push()
+    rotate(-90)
+    arc(0, 0, r * 2  - 20, r * 2  - 20, 0, 180, OPEN)
+    pop()
+    
+
+    beginShape();
+    for (let i = 0; i < 360; i++) {
+      const rx = (r - 38) * cos(i);
+      const ry = (r - 38) * sin(i);
+      vertex(rx, ry);
+    }
+    endShape(CLOSE);
+
   };
 
   drawR2D2(): void {
