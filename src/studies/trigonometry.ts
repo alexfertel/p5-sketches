@@ -5,50 +5,36 @@ class Trigonometry implements ISketch {
     background(chroma("#222831").hex());
     // background(0);
     const origin = Vector2D.center();
-    translate(origin.x, origin.y);
+    // translate(origin.x, origin.y);
 
-    const length = 100;
     noFill();
     strokeWeight(2);
-    const glowColor = chroma("fcf7bb");
-    const sc = chroma
-      .scale([glowColor, backgroundColor])
-      .classes(5)
-      .mode("lab");
 
-    const strokeSetter = (j: number): void => {
-      stroke(sc(j / length).hex());
+    const lineColor = chroma("fbfbfb").alpha(0.2);
+    const lineColorDarker = chroma("fbfbfb").alpha(0.2).darken();
+
+    fill(lineColorDarker.hex());
+    noStroke()
+    ellipse(width / 2, height / 2, 400, 200);
+    noFill();
+    const drawer = (x: number, y: number): void => {
+      const lineCount = 180;
+      const angularVelocity = 360 / lineCount;
+      const radius = 200;
+      for (let i = 0; i < lineCount; i++) {
+        const angle = angularVelocity * i;
+        const rx = x + radius * cos(angle);
+        const ry = y + radius / 2 * sin(angle);
+        const length = random(30, 80);
+
+        stroke(lineColorDarker.hex());
+        line(rx, ry, rx, ry - length * 2);
+        stroke(lineColor.hex());
+        line(rx, ry, rx, ry - length);
+      }
     };
-    // drawArc(0, 0, 200, 0, 0.1, length, strokeSetter);
 
-    const spiralCount = 50;
-    const angularVelocity = 360 / spiralCount;
-    for(let i = 0; i < spiralCount; i++)
-        drawSpiral(0, 0, i * angularVelocity, 50, 1000, 1, strokeSetter);
-
-    // noStroke();
-    // fill(0);
-    // circle(0, 0, 100);
-  };
-
-  drawBlind = (
-    originX: number,
-    originY: number,
-    radius: number,
-    lineCount: number,
-    startAngle: number
-  ): void => {
-    push();
-    translate(originX, originY);
-    rotate(startAngle);
-    const angularVelocity = 180 / lineCount;
-
-    for (let i = 0; i < lineCount; i++) {
-      const x = radius * cos(90 + angularVelocity * i);
-      const y = radius * sin(90 + angularVelocity * i);
-
-      line(x, y, -x, y);
-    }
-    pop();
+    let drawerCount = 1;
+    while (drawerCount--) drawer(width / 2, height / 2);
   };
 }
