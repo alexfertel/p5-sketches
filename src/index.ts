@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const factory: ISketch = ((): Trigonometry => new Trigonometry())();
+const factory: ISketch = ((): PenroseLSystem => new PenroseLSystem())();
 
 const setup = (): void => factory.setup();
 
