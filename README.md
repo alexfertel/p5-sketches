@@ -43,7 +43,7 @@ So, the workflow would be something like the following:
 * Create a new type that implements `ISketch`.
 * Define two functions for that type, namely `setup` and `draw`.
 * Sketch inside those functions
-* Instance the new *sketch-like* type inside the right hand-side of factory.
+* Instance the new *sketch-like* type inside the right hand-side of `factory`.
 
 ### Hot reloading
 
