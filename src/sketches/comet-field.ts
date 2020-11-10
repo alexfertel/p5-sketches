@@ -1,20 +1,26 @@
 class CometFieldSketch implements ISketch, ICanvasMapper<number> {
-  public lineSize = 50;
-  public stepSize = 5;
+  public lineSize = 150;
+  public stepSize = 3;
   public sinks: Circle[] = [];
 
   setup(): void {
     createCanvas(windowWidth, windowHeight);
     colorMode(HSB, 360, 1, 1, 1);
     noFill();
-    // background(0);
+    background(0);
 
-    this.render(100);
+    for (let i = 0; i < 5; i++)
+      this.sinks.push({
+        center: new Vector2D(random(width), random(height)),
+        radius: random(50, 100)
+      });
+
+    strokeWeight(3);
+    this.render(5000);
   }
 
   render(pointCount: number): void {
-    // const sc = chroma.scale(random(sequential)).classes(4);
-    const sc = chroma.scale(Blues).classes(3);
+    const sc = chroma.scale(random(sequential)).padding([.2, .2]);
     while (pointCount > 0) {
       const p = new Vector2D(
         random(-150, width + 150),

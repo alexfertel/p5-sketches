@@ -13,13 +13,16 @@ class SinksSketch implements ISketch, ICanvasMapper<number> {
     colorMode(HSB, 255);
     // const c = color(map(214, 0, 360, 0, 255), 255, map(30, 0, 100, 0, 255));
     // background(c);
-    
+
     background(255);
     // stroke(255);
     noFill();
-    
-    // for(let i = 0; i < 5; i++)
-    //   this.sinks.push({ center: new Vector2D(random(width), random(height)), radius: random(50, 100) });
+
+    for (let i = 0; i < 5; i++)
+      this.sinks.push({
+        center: new Vector2D(random(width), random(height)),
+        radius: random(50, 100)
+      });
     // this.sinks.push({ center: new Vector2D(width / 2, height / 2), radius: random(50, 200) });
 
     this.render(10000);
@@ -37,12 +40,11 @@ class SinksSketch implements ISketch, ICanvasMapper<number> {
 
   drawLine(point: Vector2D): void {
     let stepCount = this.lineSize / this.stepSize;
-    
-    colorMode(RGB, 255, 255, 255, 100);
-    const c1 = {r: 255, g: 0, b: 0};
-    const c2 = {r: 0, g: 0, b: 255};
 
-  
+    colorMode(RGB, 255, 255, 255, 100);
+    const c1 = { r: 255, g: 0, b: 0 };
+    const c2 = { r: 0, g: 0, b: 255 };
+
     beginShape();
     curveVertex(point.x, point.y);
     while (stepCount > 0) {
@@ -70,8 +72,8 @@ class SinksSketch implements ISketch, ICanvasMapper<number> {
   }
 
   getValue(point: Vector2D): number {
-    for(let i = 0; i < this.sinks.length; i++){
-      if(insideCircleBounds(point, this.sinks[i])){
+    for (let i = 0; i < this.sinks.length; i++) {
+      if (insideCircleBounds(point, this.sinks[i])) {
         const polar = cartesianToPolar(point.sub(this.sinks[i].center));
         return polar.angle - PI / 2;
       }

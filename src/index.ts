@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const factory: ISketch = ((): TriangularMesh => new TriangularMesh())();
+const factory: ISketch = ((): Sunset => new Sunset())();
 
 const setup = (): void => factory.setup();
 
