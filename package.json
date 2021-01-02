@@ -21,7 +21,7 @@
     "chroma-js": "^2.1.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.1",
-    "p5": "^1.0.0",
+    "p5": "^1.2.0",
     "typescript": "^3.8.3"
   }
 }
