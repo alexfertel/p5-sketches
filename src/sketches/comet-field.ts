@@ -12,7 +12,7 @@ class CometFieldSketch implements ISketch, ICanvasMapper<number> {
     for (let i = 0; i < 5; i++)
       this.sinks.push({
         center: new Vector2D(random(width), random(height)),
-        radius: random(50, 100)
+        radius: random(50, 100),
       });
 
     strokeWeight(3);
@@ -20,7 +20,7 @@ class CometFieldSketch implements ISketch, ICanvasMapper<number> {
   }
 
   render(pointCount: number): void {
-    const sc = chroma.scale(random(sequential)).padding([.2, .2]);
+    const sc = chroma.scale(random(sequential)).padding([0.2, 0.2]);
     while (pointCount > 0) {
       const p = new Vector2D(
         random(-150, width + 150),
@@ -46,7 +46,7 @@ class CometFieldSketch implements ISketch, ICanvasMapper<number> {
         const representation = sc(offset)
           .alpha(alphaOffset)
           .hsl()
-          .map(value => value || 0);
+          .map((value) => value || 0);
 
         const c = color(
           representation[0],

@@ -105,7 +105,7 @@ class FlowFieldsSketch implements ISketch {
 
     this.initVars();
     const grid = this.initPerlinNoise();
-    this.renderFlowField(grid);
+    // this.renderFlowField(grid);
     this.renderLines(grid);
   }
 
