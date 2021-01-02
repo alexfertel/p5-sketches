@@ -1,4 +1,3 @@
-
 const w = 1;
 let cells: Array<number>;
 
@@ -6,7 +5,7 @@ let generation = 0;
 
 const ruleset = [0, 0, 0, 1, 1, 1, 1, 0];
 
-function rules(a: number, b: number, c: number) : number {
+function rules(a: number, b: number, c: number): number {
   if (a == 1 && b == 1 && c == 1) return ruleset[0];
   if (a == 1 && b == 1 && c == 0) return ruleset[1];
   if (a == 1 && b == 0 && c == 1) return ruleset[2];
@@ -18,19 +17,17 @@ function rules(a: number, b: number, c: number) : number {
   return 0;
 }
 
-function generate() : void{
+function generate(): void {
   const nextgen = Array(cells.length);
-  for (let i = 1; i < cells.length-1; i++) {
-    const left   = cells[i-1];   
-    const me     = cells[i];     
-    const right  = cells[i+1];   
+  for (let i = 1; i < cells.length - 1; i++) {
+    const left = cells[i - 1];
+    const me = cells[i];
+    const right = cells[i + 1];
     nextgen[i] = rules(left, me, right);
   }
   cells = nextgen;
   generation++;
 }
-
-
 
 // function setup() : void {
 //   createCanvas(windowWidth, windowHeight);
@@ -58,5 +55,3 @@ function generate() : void{
 //     generation = 0;
 //   }
 // }
-
-
