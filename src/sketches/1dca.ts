@@ -1,8 +1,3 @@
-const w = 1;
-let cells: Array<number>;
-
-let generation = 0;
-
 const ruleset = [0, 0, 0, 1, 1, 1, 1, 0];
 
 function rules(a: number, b: number, c: number): number {
@@ -17,16 +12,56 @@ function rules(a: number, b: number, c: number): number {
   return 0;
 }
 
-function generate(): void {
-  const nextgen = Array(cells.length);
-  for (let i = 1; i < cells.length - 1; i++) {
-    const left = cells[i - 1];
-    const me = cells[i];
-    const right = cells[i + 1];
-    nextgen[i] = rules(left, me, right);
+class OneDimCellularAutomata implements ISketch {
+  cells: number[][];
+  w: number;
+  generation = 0;
+
+  setup(): void {
+    createCanvas(windowWidth, windowHeight);
+    colorMode(HSB, 360, 1, 1, 1);
+    angleMode(DEGREES);
+    noFill();
+    background(chroma("#000").hsv());
+
+    strokeWeight(1);
+    noStroke();
+
+    this.cells = [];
+    this.w = 2;
+    for (let i = 0; i < height / this.w; i++) {
+      const row = [];
+      for (let j = 0; j < width / this.w; j++) {
+        row.push(random() < 0.5 ? 0 : 1);
+      }
+      this.cells.push(row);
+    }
+
+    for (let j = 0; j < width / this.w; j++)
+      this.cells[0][j] = j === this.cells[0].length / 2 ? 1 : 0;
+
+    for (let i = 0; i < height / this.w - 1; i++) {
+      for (let j = 0; j < width / this.w; j++) {
+        const left = this.cells[i][(j - 1) % this.cells[i].length];
+        const me = this.cells[i][j];
+        const right = this.cells[i][(j + 1) % this.cells[i].length];
+
+        const next = rules(left, me, right);
+        this.cells[i + 1][j] = next;
+      }
+    }
+
+    for (let i = 0; i < height / this.w; i++) {
+      for (let j = 0; j < width / this.w; j++) {
+        const current = this.cells[i][j];
+
+        fill(current);
+        rect(j * this.w, i * this.w, this.w, this.w);
+      }
+    }
   }
-  cells = nextgen;
-  generation++;
+
+  draw(): void {}
 }
 
 // function setup() : void {
