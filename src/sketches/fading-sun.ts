@@ -1,7 +1,7 @@
 class FadingSunSketch implements ISketch {
   setup(): void {
     init();
-    background(0)
+    background(0);
 
     const origin = Vector2D.center();
 
@@ -20,12 +20,11 @@ class FadingSunSketch implements ISketch {
     //     line(0, height / 2 + spacePerLine * i, width, height / 2 + spacePerLine * i);
     // }
 
-    
     // strokeWeight(50)
     // line(0, height / 2 + spacePerLine * lineCount - 16, width, height / 2 + spacePerLine * lineCount - 16);
 
     translate(origin.x, origin.y);
-    const sides = 10
+    const sides = 10;
     const angle = 360 / sides;
     const radius = 200;
     const points = [];
@@ -37,13 +36,15 @@ class FadingSunSketch implements ISketch {
       points.push(point);
     }
 
-    const c1 = chroma('gold').alpha(0.01)
+    const c1 = chroma("gold").alpha(0.01);
     noStroke();
     fill(c1.hex());
-    drawWaterColor(points, 200, points.map(() => random(0.5, 0.5)));
-
-
-}
+    drawWaterColor(
+      points,
+      100,
+      points.map(() => random(0.5, 0.5))
+    );
+  }
 
   draw(): void {}
 }
