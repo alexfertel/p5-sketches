@@ -2,11 +2,12 @@ type Orbit = "line" | "arc";
 
 class StarSystemSketch implements ISketch {
   private _spaceColor: p5.Color;
+  private _spacePalette: p5.Color[];
   private _frameColor: p5.Color;
   private _orbitTrajectoryColor: p5.Color;
   private _planetPalette: p5.Color[];
   private _starPalette: p5.Color[];
-  private _padding = 20;
+  private _padding = 0;
   private _canvasWidth: number;
   private _canvasHeight: number;
 
@@ -16,27 +17,71 @@ class StarSystemSketch implements ISketch {
   systemAngle: number;
 
   setup(): void {
-    createCanvas(windowWidth, windowHeight);
-    this._spaceColor = color("#222831");
+    createCanvas(1000, 1000);
+    pixelDensity(5);
+    this._spacePalette = [
+      color("#ffcdb2"),
+      color("#ffb4a2"),
+      color("#e5989b"),
+      color("#b5838d"),
+      color("#6d6875"),
+    ];
+    // this._spaceColor = color("#222831");
+    this._spaceColor = random(this._spacePalette);
     this._frameColor = color("#eae7d9");
     this._orbitTrajectoryColor = color("#ffecc7");
 
+    // this._planetPalette = [
+    //   color("#f79071"),
+    //   color("#fa744f"),
+    //   color("#16817a"),
+    //   color("#ffb6b6"),
+    //   color("#00bdaa"),
+    //   color("#fe346e"),
+    //   color("#d7fffd"),
+    //   color("#024249"),
+    // ];
+
     this._planetPalette = [
-      color("#f79071"),
-      color("#fa744f"),
-      color("#16817a"),
-      color("#ffb6b6"),
-      color("#00bdaa"),
-      color("#fe346e"),
-      color("#d7fffd"),
-      color("#024249")
+      color("#264653"),
+      color("#2a9d8f"),
+      color("#e9c46a"),
+      color("#f4a261"),
+      color("#e76f51"),
     ];
 
+    // this._planetPalette = [
+    //   color("#f72585"),
+    //   color("#b5179e"),
+    //   color("#7209b7"),
+    //   color("#560bad"),
+    //   color("#480ca8"),
+    //   color("#3a0ca3"),
+    //   color("#3f37c9"),
+    //   color("#4361ee"),
+    //   color("#4895ef"),
+    //   color("#4cc9f0"),
+    // ];
+
+    // this._planetPalette = [
+    //   color("#3d5a80"),
+    //   color("#98c1d9"),
+    //   color("#e0fbfc"),
+    //   color("#ee6c4d"),
+    //   color("#293241"),
+    // ];
+
     this._starPalette = [
-      color("#fdd998"),
-      color("#fae7cb"),
-      color("#ffb385"),
-      color("#ff7272")
+      color("#e8a598"),
+      color("#ffb5a7"),
+      color("#fec5bb"),
+      color("#fcd5ce"),
+      color("#fae1dd"),
+      color("#f8edeb"),
+      color("#f9e5d8"),
+      color("#f9dcc4"),
+      color("#fcd2af"),
+      color("#fec89a"),
     ];
 
     colorMode(HSB, 255);
@@ -44,14 +89,14 @@ class StarSystemSketch implements ISketch {
     this._canvasWidth = width - this._padding * 2;
     this._canvasHeight = height - this._padding * 2;
 
-    this.sunDiameter = random(500, 750);
+    this.sunDiameter = random(200, 700);
     this.sunRadius = this.sunDiameter / 2;
-    this.sunCenter = new Vector2D(random(width), height);
+    this.sunCenter = new Vector2D(random(width), random(height));
 
     this.drawSpace();
     this.drawSun();
 
-    const planetCount = 7;
+    const planetCount = 100;
     const displacement = 200;
     for (let i = 0; i < planetCount; i++) {
       const radius = 150 + i * displacement + this._padding;
@@ -76,10 +121,11 @@ class StarSystemSketch implements ISketch {
     drawNoise(
       new Vector2D(this._padding, this._padding),
       new Vector2D(width - this._padding, height - this._padding),
-      1,
+      3,
       () => {
         stroke(0, map(random(), 0, 1, 0, 100));
-      }
+      },
+      0.5
     );
   }
 
@@ -105,6 +151,7 @@ class StarSystemSketch implements ISketch {
     }
     pop();
   }
+
   drawOrbit(scaleFactor: number, type: Orbit): void {
     stroke(this._orbitTrajectoryColor);
     if (type === "arc") {
@@ -113,7 +160,7 @@ class StarSystemSketch implements ISketch {
         this.sunCenter,
         this.sunDiameter + scaleFactor,
         this.sunDiameter + scaleFactor,
-        30
+        random(30, 150)
       );
     } else {
       console.log("Not an arc");
@@ -128,6 +175,7 @@ class StarSystemSketch implements ISketch {
   ): void {
     const angularVelocity = PI / arcCount;
 
+    const start_angle = random(TWO_PI);
     let angle = 0;
     while (angle < TWO_PI) {
       arc(
@@ -135,8 +183,8 @@ class StarSystemSketch implements ISketch {
         center.y,
         width,
         height,
-        angle,
-        angle + angularVelocity / 2
+        start_angle + angle,
+        start_angle + angle + angularVelocity / 2
       );
       angle += angularVelocity;
     }
