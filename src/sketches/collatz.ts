@@ -1,6 +1,6 @@
-const palette = chroma.scale(Blues);
-const lineLength = 5;
-const upperBound = 1000000;
+const palette = chroma.scale(Spectral);
+const lineLength = 20;
+const upperBound = 100000;
 
 const collatz = (start: number): number[] => {
   if (start === 1) return [];
@@ -12,19 +12,24 @@ const collatz = (start: number): number[] => {
 
 const drawSequence = (sequence: number[]): void => {
   for (let i = 1; i < sequence.length; i++) {
+    if (i < 5) strokeWeight(3);
+    else {
+      strokeWeight(1);
+    }
     const n = sequence[i];
 
     stroke(chroma(palette(map(i, 0, sequence.length, 0, 1))).hsv());
     line(0, 0, lineLength, 0);
     translate(lineLength, 0);
 
-    // const evenRotation = -map(1000 - n, 1, 10000, 1.5, 3);
-    // const oddRotation = map(1000 - n, 1, 10000, 2.9, 5);
-    const evenRotation = -map(n, 1, upperBound, -10, -16);
-    const oddRotation = map(n, 1, upperBound, 22, 60);
+    const evenRotation = -map(upperBound - n, 1, 10000, 1, 1.5);
+    const oddRotation = map(upperBound - n, 1, 10000, 2, 5);
+    // const evenRotation = -map(n, 1, upperBound, -10, -16);
+    // const oddRotation = map(n, 1, upperBound, 22, 60);
 
-    if (n > 1000) rotate(n % 2 === 0 ? -2 : 3);
-    else rotate(n % 2 === 0 ? evenRotation : oddRotation);
+    rotate(n % 2 === 0 ? evenRotation : oddRotation);
+    // if (n > 1000) rotate(n % 2 === 0 ? -2 : 3);
+    // else rotate(n % 2 === 0 ? evenRotation : oddRotation);
     // rotate(n % 2 === 0 ? 6.5 : -12);
   }
 };
@@ -57,12 +62,13 @@ class CollatzSketch implements ISketch {
     // Run collatz for 5000 numbers ranging from 1 to 1_000_000
     for (let i = 0; i < 50000; i++) {
       const sequence = collatz(round(random(1, upperBound)));
-      if (sequence.length < 500) this.sequences.push(sequence);
+      if (sequence.length < 60) this.sequences.push(sequence);
     }
 
     push();
     // translate(25, (6 * height) / 8);
-    translate(width / 2, height / 2);
+    translate(width / 3, height / 3.5);
+    rotate(15);
     scale(1);
     this.sequences.forEach((seq) => {
       push();
