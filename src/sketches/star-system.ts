@@ -7,7 +7,7 @@ class StarSystemSketch implements ISketch {
   private _orbitTrajectoryColor: p5.Color;
   private _planetPalette: p5.Color[];
   private _starPalette: p5.Color[];
-  private _padding = 0;
+  private _padding = 20;
   private _canvasWidth: number;
   private _canvasHeight: number;
 
@@ -19,13 +19,28 @@ class StarSystemSketch implements ISketch {
   setup(): void {
     createCanvas(1000, 1000);
     pixelDensity(5);
+
     this._spacePalette = [
-      color("#ffcdb2"),
-      color("#ffb4a2"),
-      color("#e5989b"),
-      color("#b5838d"),
-      color("#6d6875"),
+      color("#293241"),
+      // color("#0466c8"),
+      // color("#0353a4"),
+      // color("#023e7d"),
+      // color("#002855"),
+      // color("#001845"),
+      // color("#001233"),
+      // color("#33415c"),
+      // color("#5c677d"),
+      // color("#7d8597"),
+      // color("#979dac"),
     ];
+
+    // this._spacePalette = [
+    //   color("#ffcdb2"),
+    //   color("#ffb4a2"),
+    //   color("#e5989b"),
+    //   color("#b5838d"),
+    //   color("#6d6875"),
+    // ];
     // this._spaceColor = color("#222831");
     this._spaceColor = random(this._spacePalette);
     this._frameColor = color("#eae7d9");
@@ -71,6 +86,27 @@ class StarSystemSketch implements ISketch {
     //   color("#293241"),
     // ];
 
+    this._planetPalette = [
+      color("#03071e"),
+      color("#370617"),
+      color("#6a040f"),
+      color("#9d0208"),
+      color("#d00000"),
+      color("#dc2f02"),
+      color("#e85d04"),
+      color("#f48c06"),
+      color("#faa307"),
+      color("#ffba08"),
+    ];
+
+    this._planetPalette = [
+      color("#227c9d"),
+      color("#17c3b2"),
+      color("#ffcb77"),
+      color("#d00000"),
+      color("#fe6d73"),
+    ];
+
     this._starPalette = [
       color("#e8a598"),
       color("#ffb5a7"),
@@ -89,43 +125,50 @@ class StarSystemSketch implements ISketch {
     this._canvasWidth = width - this._padding * 2;
     this._canvasHeight = height - this._padding * 2;
 
-    this.sunDiameter = random(200, 700);
+    this.sunDiameter = random(200, 500);
     this.sunRadius = this.sunDiameter / 2;
     this.sunCenter = new Vector2D(random(width), random(height));
 
     this.drawSpace();
     this.drawSun();
 
-    const planetCount = 100;
-    const displacement = 200;
+    const planetCount = 20;
+    const displacement = 100;
     for (let i = 0; i < planetCount; i++) {
       const radius = 150 + i * displacement + this._padding;
       this.drawOrbit(radius, "arc");
 
-      push();
-      translate(this.sunCenter.x, this.sunCenter.y);
-      rotate(PI);
-      const distance = this.sunRadius + radius / 2;
-      stroke(random(255), 255, 255);
-      const angle = random(
-        QUARTER_PI - map(width - this.sunCenter.x, 0, width, 0, QUARTER_PI),
-        PI - QUARTER_PI - map(this.sunCenter.x, 0, width, 0, QUARTER_PI)
-      );
-      const center = new Vector2D(distance * cos(angle), distance * sin(angle));
-      const planet = { center: center, radius: random(20, 80) } as Circle;
-      this.drawPlanet(planet);
-      pop();
+      const planets_per_orbit = random(3);
+      for (let j = 0; j < planets_per_orbit; j++) {
+        push();
+        translate(this.sunCenter.x, this.sunCenter.y);
+        // rotate(PI);
+        const distance = this.sunRadius + radius / 2;
+        stroke(random(255), 255, 255);
+        // const angle = random(
+        //   QUARTER_PI - map(width - this.sunCenter.x, 0, width, 0, QUARTER_PI),
+        //   PI - QUARTER_PI - map(this.sunCenter.x, 0, width, 0, QUARTER_PI)
+        // );
+        const angle = random(PI * 2);
+        const center = new Vector2D(
+          distance * cos(angle),
+          distance * sin(angle)
+        );
+        const planet = { center: center, radius: random(20, 80) } as Circle;
+        this.drawPlanet(planet);
+        pop();
+      }
     }
 
     this.drawFrame();
     drawNoise(
       new Vector2D(this._padding, this._padding),
       new Vector2D(width - this._padding, height - this._padding),
-      3,
+      1,
       () => {
-        stroke(0, map(random(), 0, 1, 0, 100));
+        stroke(0, map(random(), 0, 1, 0, 60));
       },
-      0.5
+      0.05
     );
   }
 
@@ -145,10 +188,16 @@ class StarSystemSketch implements ISketch {
     fill(this._spaceColor);
     rect(this._padding, this._padding, this._canvasWidth, this._canvasHeight);
 
-    for (let i = 0; i < 7500; i++) {
-      stroke(color(255, random(0, 150)));
-      point(random(width), random(height));
-    }
+    // const stars_count = random(15000);
+    drawNoise(
+      new Vector2D(this._padding, this._padding),
+      new Vector2D(width - this._padding, height - this._padding),
+      1,
+      () => {
+        stroke(255, map(random(), 0, 1, 0, 100));
+      },
+      0.05
+    );
     pop();
   }
 
