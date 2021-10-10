@@ -21,7 +21,7 @@ class SinksSketch implements ISketch, ICanvasMapper<number> {
     for (let i = 0; i < 5; i++)
       this.sinks.push({
         center: new Vector2D(random(width), random(height)),
-        radius: random(50, 100)
+        radius: random(50, 100),
       });
     // this.sinks.push({ center: new Vector2D(width / 2, height / 2), radius: random(50, 200) });
 
